@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Domotica.Core.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +41,11 @@ namespace Domotica.Core
                 endpoints.MapHub<Device>("/Hubs/Device");
                 endpoints.MapHub<Hello>("/Hubs/Hello");
             });
-            app.UseStaticFiles();
+            app.UseDefaultFiles(new DefaultFilesOptions 
+            {
+                DefaultFileNames = new List<string> { "/index.html" }
+            });
+            app.UseFileServer();
             app.UseMvc();
             app.UseMvcWithDefaultRoute();
             app.UseHsts();
