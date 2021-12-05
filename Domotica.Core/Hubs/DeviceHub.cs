@@ -8,7 +8,7 @@ namespace Domotica.Core.Hubs
     {
         // Container for device status implemented on the device html page.
         // Every device knows what it is and how to deal with related data!
-        private static string deviceStatus;
+        private static string _deviceStatus;
 
         public void SendCommand(string value)
         {
@@ -17,13 +17,13 @@ namespace Domotica.Core.Hubs
 
         public async Task SendDeviceStatus(string value)
         {
-            deviceStatus = value;
+            _deviceStatus = value;
             await Clients.Others.SendAsync("deviceStatusReceived", value);
         }
 
         public async Task GetDeviceStatusInitial()
         {
-            await Clients.Caller.SendAsync("deviceStatusInitial", deviceStatus);
+            await Clients.Caller.SendAsync("deviceStatusInitial", _deviceStatus);
         }
     }
 }

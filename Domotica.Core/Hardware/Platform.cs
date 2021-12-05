@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Configuration;
+using Net = System.Net; 
+//using System.Configuration;
 
 namespace Domotica.Core.Hardware
 {
@@ -19,15 +20,13 @@ namespace Domotica.Core.Hardware
                 DevicePath = GpioFile;
 
                 //Dns = ConfigurationManager.AppSettings["DNS.RasPi"];                  // Raspberry Pi is the preference
-                //Dns = ConfigurationManager.AppSettings["DNS.Windows"];                // Windows
-                //Dns = "raspberrypi.local";
-                //Dns = "192.168.2.38";
+                Dns = $"{Net.Dns.GetHostName()}.local";
+
                 return;
             }
-            //HACK: had some trouble with ConfigurationManager under Mono - so the mDNS names are hardcoded for the first!
+
             DevicePath = Directory.GetCurrentDirectory() + GpioFile;
             SetPath(DevicePath);
-            SetDnsName();
         }
 
         /// <summary>
@@ -41,12 +40,6 @@ namespace Domotica.Core.Hardware
             var currentPath = Path.GetFullPath(@"..\..\");  
             path = path.TrimStart('/').Replace('/', '\\');
             DevicePath = Path.Combine(currentPath, path);
-        }
-
-        private static void SetDnsName()
-        {
-            Dns = "192.168.2.38";
-            Dns = ConfigurationManager.AppSettings["DNS.Windows"];          // For debugging and local development - windows machine preferred...
         }
     }
 }
