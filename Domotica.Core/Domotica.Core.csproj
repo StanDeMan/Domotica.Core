@@ -5,8 +5,4 @@
     <UserSecretsId>d29a9e04-789a-47d2-9e20-aa24e4221f1b</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
-  </ItemGroup>
-
 </Project>
