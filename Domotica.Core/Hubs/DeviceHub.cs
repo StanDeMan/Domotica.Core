@@ -15,7 +15,7 @@ namespace Domotica.Core.Hubs
             Command.Execute(value);
         }
 
-        public async Task SendDeviceStatus(string value)
+        public async Task DeviceStatusSend(string value)
         {
             _deviceStatus = value;
             await Clients.Others.SendAsync("deviceStatusReceived", value);

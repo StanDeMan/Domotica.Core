@@ -138,7 +138,7 @@
 
             $("#deviceBrightness").change(function () {
                 deviceStatus.LedRGBStripe.Brightness = Math.round($('#deviceBrightness').val());
-                connection.invoke("sendDeviceStatus", JSON.stringify(deviceStatus)).catch(err => console.error(err.toString()));
+                connection.invoke("deviceStatusSend", JSON.stringify(deviceStatus)).catch(err => console.error(err.toString()));
 
                 // the slider value is ranging from 0 to 255 -> this is why we multiply with 2.55
                 var valuePwm = Math.round(deviceStatus.LedRGBStripe.Brightness * 2.55);
