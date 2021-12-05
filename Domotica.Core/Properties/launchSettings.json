@@ -17,6 +17,7 @@
     },
     "Domotica.Core": {
       "commandName": "Project",
+      "commandLineArgs": "/home/pi/vsdbg/Domotica.Core",
       "launchBrowser": true,
       "launchUrl": "http://localhost:5000",
       "environmentVariables": {

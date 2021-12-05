@@ -35,6 +35,8 @@ namespace Domotica.Core
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            //app.UseHttpsRedirection();
+            app.UseFileServer();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
@@ -45,11 +47,9 @@ namespace Domotica.Core
             {
                 DefaultFileNames = new List<string> { "/index.html" }
             });
-            app.UseFileServer();
             app.UseMvc();
             app.UseMvcWithDefaultRoute();
             app.UseHsts();
-            app.UseHttpsRedirection();
         }
     }
 }
