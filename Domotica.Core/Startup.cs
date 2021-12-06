@@ -35,7 +35,7 @@ namespace Domotica.Core
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseFileServer();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
