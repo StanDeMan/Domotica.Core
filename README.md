@@ -4,8 +4,8 @@ Install pigpiod. It's an amazing piece of software: https://abyz.me.uk/rpi/pigpi
 Even PWM is possible with low CPU power consumtion - doing it via DMA.
 
 Used self signed certificate
-NGiNX config:
-# Default server configuration
+
+# Default NGiNX server configuration
 #
 server {
    listen 80;
