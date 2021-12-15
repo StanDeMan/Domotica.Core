@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMvc(option => option.EnableEndpointRouting = false);
 builder.Services.AddSignalR();
 
-var app = builder.Build();
+using var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -18,8 +18,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler("/Error");
-app.UseHsts();
-app.UseHttpsRedirection();
+//app.UseHsts();
+//app.UseHttpsRedirection();
 app.UseFileServer();
 app.UseRouting();
 app.UseEndpoints(endpoints =>
@@ -29,6 +29,5 @@ app.UseEndpoints(endpoints =>
 });
 app.UseMvc();
 app.UseMvcWithDefaultRoute();
-app.UseHsts();
 
 app.Run();
