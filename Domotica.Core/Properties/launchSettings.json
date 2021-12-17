@@ -10,6 +10,7 @@
   "profiles": {
     "Domotica.Core": {
       "commandName": "Project",
+      "commandLineArgs": "/home/pi/vsdbg/Domotica.Core",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
