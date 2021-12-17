@@ -73,14 +73,14 @@
                     ? $("#switchicon").css("color", "red")
                     : $("#switchicon").css("color", "green");
 
-                $("#deviceBrightness").val(deviceStatus.LedRGBStripe.Brightness)
+                //$('#deviceBrightness').attr('data-value', deviceStatus.LedRGBStripe.Brightness);
                 $("#BrightnessInTitle").text(strBrightnessInTile.replace("{0}", deviceStatus.LedRGBStripe.Brightness));
             };
 
             connection.on('deviceStatusReceived', (status) => {
                 // The second is taking the actual device status
                 deviceStatus = JSON.parse(status);
-                $("#deviceBrightness").val(deviceStatus.LedRGBStripe.Brightness);
+
                 UpdateState(deviceStatus);
             });
 
@@ -89,7 +89,6 @@
                     // The first client reading the device status gets here inside
                     deviceStatus = JSON.parse(status);
                 }
-                $("#deviceBrightness").val(deviceStatus.LedRGBStripe.Brightness);
                 UpdateState(deviceStatus);
             });
 
@@ -97,7 +96,7 @@
                 $("#deviceBrightness").removeAttr('disabled');
 
                 $("#deviceBrightness").on("change", function(){
-                    deviceStatus.LedRGBStripe.Brightness = Math.round(this.value);
+                    deviceStatus.LedRGBStripe.Brightness = Math.round(this.value);                       
                     connection.invoke("deviceStatusSend", JSON.stringify(deviceStatus)).catch(err => console.error(err.toString()));
 
                     // the slider value is ranging from 0 to 255 -> this is why we multiply with 2.55
@@ -107,6 +106,7 @@
                         ? connection.invoke("sendCommand", "p 4 0 p 14 0 p 3 0").catch(err => console.error(err.toString()))
                         : connection.invoke("sendCommand", "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm)
                         .catch(err => console.error(err.toString()));
+
                     UpdateState(deviceStatus);
                 });
             });
