@@ -13,7 +13,6 @@
         <link href="lib/metro-ui/css/metro.css" rel="stylesheet" />
         <link href="lib/metro-ui/css/metro-icons.css" rel="stylesheet" />
         <link href="lib/metro-ui/css/metro-components.css" rel="stylesheet" />
-        <link href="lib/metro-ui/css/schemes/sky-net.css" rel="stylesheet" />
 
         <script src="lib/signalr/signalr.min.js"></script>
     </head>
@@ -21,8 +20,8 @@
         <!-- With icon (font) -->
         <div class="container">
             <div class="heading">
-                <span class="icon mif-switch" id="switchicon" style="color: red;"></span>
-                <span class="title" id="BrightnessInTitle">Main Light - Brightness: 0%</span>
+                <span class="icon mif-switch mif-lg fg-red" id="switchicon"></span>
+                <strong><span class="title" id="BrightnessInTitle">Main Light - Brightness: 0%</span></strong>
             </div>
             <div class="row">
                 <div class="cell colspan12">
@@ -73,14 +72,13 @@
                     ? $("#switchicon").css("color", "red")
                     : $("#switchicon").css("color", "green");
 
-                //$('#deviceBrightness').attr('data-value', deviceStatus.LedRGBStripe.Brightness);
                 $("#BrightnessInTitle").text(strBrightnessInTile.replace("{0}", deviceStatus.LedRGBStripe.Brightness));
-            };
-
+                $("#deviceBrightness").attr("data-value", deviceStatus.LedRGBStripe.Brightness);
+            };            
+            
             connection.on('deviceStatusReceived', (status) => {
                 // The second is taking the actual device status
                 deviceStatus = JSON.parse(status);
-
                 UpdateState(deviceStatus);
             });
 
@@ -95,14 +93,17 @@
             $(document).ready(function () {
                 $("#deviceBrightness").removeAttr('disabled');
 
-                $("#deviceBrightness").on("change", function(){
+                $("#deviceBrightness").on("start stop move", function(){
                     deviceStatus.LedRGBStripe.Brightness = Math.round(this.value);                       
                     connection.invoke("deviceStatusSend", JSON.stringify(deviceStatus)).catch(err => console.error(err.toString()));
 
                     // the slider value is ranging from 0 to 255 -> this is why we multiply with 2.55
                     var valuePwm = Math.round(deviceStatus.LedRGBStripe.Brightness * 2.55);
+                    deviceStatus.LedRGBStripe.Color.R = valuePwm;
+                    deviceStatus.LedRGBStripe.Color.G = valuePwm;
+                    deviceStatus.LedRGBStripe.Color.B = valuePwm;
 
-                    $('#deviceBrightness').val() === "0" 
+                    deviceStatus.LedRGBStripe.Brightness === "0" 
                         ? connection.invoke("sendCommand", "p 4 0 p 14 0 p 3 0").catch(err => console.error(err.toString()))
                         : connection.invoke("sendCommand", "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm)
                         .catch(err => console.error(err.toString()));
