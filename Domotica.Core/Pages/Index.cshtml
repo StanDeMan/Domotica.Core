@@ -21,7 +21,7 @@
         <div class="container">
             <div class="heading">
                 <span class="icon mif-switch mif-lg fg-red" id="switchicon"></span>
-                <strong><span class="title" id="BrightnessInTitle">Main Light - Brightness: 0%</span></strong>
+                <strong><span class="title" id="BrightnessInTitle">Device - Brightness: 0%</span></strong>
             </div>
             <div class="row">
                 <div class="cell colspan12">
@@ -43,9 +43,10 @@
         </div>
 
         <!--Add script to update the page and send messages.-->
-        <script src="lib/metro-ui/js/metro.min.js"></script>
+        <script src="lib/metro-ui/js/metro.js"></script>
         <script type="text/javascript">
-            var deviceStatus = {
+            var device = {
+                "Name": "Device",
                 "LedRGBStripe": {
                     "Brightness": "0",
                     "Color": {
@@ -62,53 +63,55 @@
                 .build();
 
             connection.start()
-                .then(() => connection.invoke("getDeviceStatusInitial"))
-                .catch(err => console.error(err.toString()));
+                .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device))
+                .catch(err => console.error(err.toString())));
 
-            UpdateState = function (deviceStatus) {
-                var strBrightnessInTile = "Main Light - Brightness: {0}%";
-
+            UpdateState = function (device) {
                 $("#deviceBrightness").val() === "0"
                     ? $("#switchicon").css("color", "red")
                     : $("#switchicon").css("color", "green");
 
-                $("#BrightnessInTitle").text(strBrightnessInTile.replace("{0}", deviceStatus.LedRGBStripe.Brightness));
-                $("#deviceBrightness").attr("data-value", deviceStatus.LedRGBStripe.Brightness);
+                var strBrightnessInTile = "{0} - Brightness: {1}%";
+                strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
+                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.LedRGBStripe.Brightness);
+
+                $("#BrightnessInTitle").text(strBrightnessInTile);
+                $("#deviceBrightness").attr("data-value", device.LedRGBStripe.Brightness);
             };            
             
             connection.on('deviceStatusReceived', (status) => {
                 // The second is taking the actual device status
-                deviceStatus = JSON.parse(status);
-                UpdateState(deviceStatus);
+                device = JSON.parse(status);
+                UpdateState(device);
             });
 
             connection.on('deviceStatusInitial', (status) => {
                 if (status) {
                     // The first client reading the device status gets here inside
-                    deviceStatus = JSON.parse(status);
+                    device = JSON.parse(status);
+                    UpdateState(device);
                 }
-                UpdateState(deviceStatus);
             });
 
             $(document).ready(function () {
                 $("#deviceBrightness").removeAttr('disabled');
 
                 $("#deviceBrightness").on("start stop move", function(){
-                    deviceStatus.LedRGBStripe.Brightness = Math.round(this.value);                       
-                    connection.invoke("deviceStatusSend", JSON.stringify(deviceStatus)).catch(err => console.error(err.toString()));
+                    device.LedRGBStripe.Brightness = Math.round(this.value);                       
+                    connection.invoke("deviceStatusSend", JSON.stringify(device)).catch(err => console.error(err.toString()));
 
                     // the slider value is ranging from 0 to 255 -> this is why we multiply with 2.55
-                    var valuePwm = Math.round(deviceStatus.LedRGBStripe.Brightness * 2.55);
-                    deviceStatus.LedRGBStripe.Color.R = valuePwm;
-                    deviceStatus.LedRGBStripe.Color.G = valuePwm;
-                    deviceStatus.LedRGBStripe.Color.B = valuePwm;
+                    var valuePwm = Math.round(device.LedRGBStripe.Brightness * 2.55);
+                    device.LedRGBStripe.Color.R = valuePwm;
+                    device.LedRGBStripe.Color.G = valuePwm;
+                    device.LedRGBStripe.Color.B = valuePwm;
 
-                    deviceStatus.LedRGBStripe.Brightness === "0" 
+                    device.LedRGBStripe.Brightness === "0" 
                         ? connection.invoke("sendCommand", "p 4 0 p 14 0 p 3 0").catch(err => console.error(err.toString()))
                         : connection.invoke("sendCommand", "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm)
                         .catch(err => console.error(err.toString()));
 
-                    UpdateState(deviceStatus);
+                    UpdateState(device);
                 });
             });
         </script>

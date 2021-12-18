@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices.ComTypes;
+using System.Threading.Tasks;
 using Domotica.Core.Hardware;
 using Microsoft.AspNetCore.SignalR;
 
@@ -8,22 +9,24 @@ namespace Domotica.Core.Hubs
     {
         // Container for device status implemented on the device html page.
         // Every device knows what it is and how to deal with related data!
-        private static string _deviceStatus;
+        private readonly Hardware.Device _hardWareDevice = new Hardware.Device();
 
         public void SendCommand(string value)
         {
             Command.Execute(value);
         }
 
-        public async Task DeviceStatusSend(string value)
+        public async Task DeviceStatusSend(string device)
         {
-            _deviceStatus = value;
-            await Clients.Others.SendAsync("deviceStatusReceived", value);
+            _hardWareDevice.Status = device;            
+            await Clients.Others.SendAsync("deviceStatusReceived", device);
         }
 
-        public async Task GetDeviceStatusInitial()
+        public async Task GetDeviceStatusInitial(string device)
         {
-            await Clients.Caller.SendAsync("deviceStatusInitial", _deviceStatus);
+            _hardWareDevice.ReadName(device);
+            
+            await Clients.Caller.SendAsync("deviceStatusInitial", _hardWareDevice.Status);
         }
     }
 }
