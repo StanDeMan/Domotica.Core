@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Domotica.Core.Config;
+using Newtonsoft.Json.Linq;
 
 namespace Domotica.Core.Hardware
 {
@@ -18,7 +19,7 @@ namespace Domotica.Core.Hardware
         private string SetName(string status)
         {
             dynamic data = JObject.Parse(status);
-            data.Name = "Main Light";
+            data.Name = PropertyConfig.Name;
             Status = data.ToString();
 
             return Status;
