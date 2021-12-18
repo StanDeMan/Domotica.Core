@@ -16,6 +16,11 @@ namespace Domotica.Core.Hardware
                 : SetName(status);
         }
 
+        /// <summary>
+        /// Read device name from appsettings.json config file
+        /// </summary>
+        /// <param name="status">Device json</param>
+        /// <returns>Device json with set device name</returns>
         private string SetName(string status)
         {
             dynamic data = JObject.Parse(status);
