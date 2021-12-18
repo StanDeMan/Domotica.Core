@@ -20,7 +20,7 @@
         <!-- With icon (font) -->
         <div class="container">
             <div class="heading">
-                <span class="icon mif-switch mif-lg fg-red" id="switchicon"></span>
+                <span class="icon mif-switch mif-lg fg-red" id="switchIcon"></span>
                 <strong><span class="title" id="BrightnessInTitle">Device - Brightness: 0%</span></strong>
             </div>
             <div class="row">
@@ -67,9 +67,7 @@
                 .catch(err => console.error(err.toString())));
 
             UpdateState = function (device) {
-                $("#deviceBrightness").val() === "0"
-                    ? $("#switchicon").css("color", "red")
-                    : $("#switchicon").css("color", "green");
+                OnOff();
 
                 var strBrightnessInTile = "{0} - Brightness: {1}%";
                 strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
@@ -79,6 +77,12 @@
                 $("#deviceBrightness").attr("data-value", device.LedRGBStripe.Brightness);
             };            
             
+            OnOff = function () {
+                $("#deviceBrightness").val() === "0"
+                    ? $("#switchIcon").css("color", "red")
+                    : $("#switchIcon").css("color", "green");
+            };   
+
             connection.on('deviceStatusReceived', (status) => {
                 // The second is taking the actual device status
                 device = JSON.parse(status);
@@ -94,6 +98,7 @@
             });
 
             $(document).ready(function () {
+                setInterval(OnOff, 250);
                 $("#deviceBrightness").removeAttr('disabled');
 
                 $("#deviceBrightness").on("start stop move", function(){

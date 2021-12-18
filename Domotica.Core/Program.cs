@@ -1,15 +1,11 @@
-﻿using System.IO;
-using Domotica.Core.Config;
+﻿using Domotica.Core.Config;
 using Domotica.Core.Hubs;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllersWithViews();
-builder.WebHost.UseWebRoot(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
 builder.Configuration.GetSection(nameof(PropertyConfig)).Bind(new PropertyConfig());
 
 // Add services to the container.
