@@ -24,18 +24,18 @@ namespace Domotica.Core.Hardware
             Writer.Write(command);
             Writer.Flush();
 
-            //LightDimmer(cmd);
+            LightDimmer(cmd);
         }
 
-        //private static void LightDimmer(string cmd)
-        //{
-        //    using var apa102 = new Gadget.Device(8);
+        private static void LightDimmer(string cmd)
+        {
+            using var apa102 = new Gadget.Device(8);
 
-        //    if (!apa102.IsWorking) return;
+            if (!apa102.IsWorking) return;
 
-        //    var dimVal = Convert.ToInt32(cmd.Split(' ')[2]);
-        //    apa102.Dim(dimVal);
-        //    apa102.Flush();
-        //}
+            var dimVal = Convert.ToInt32(cmd.Split(' ')[2]);
+            apa102.Dim(dimVal);
+            apa102.Flush();
+        }
     }
 }
