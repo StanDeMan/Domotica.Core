@@ -86,10 +86,15 @@
   <ItemGroup>
     <Folder Include="wwwroot\lib\metro-ui\" />
     <Folder Include="wwwroot\lib\metro-ui\js\" />
+    <Folder Include="wwwroot\lib\controls\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hardware\Hardware.csproj" />
   </ItemGroup>
 
 </Project>

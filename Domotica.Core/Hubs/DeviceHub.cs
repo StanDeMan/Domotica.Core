@@ -14,6 +14,11 @@ namespace Domotica.Core.Hubs
             Command.Execute(value);
         }
 
+        public void SendAmbientCommand(string value)
+        {
+            Command.ExecuteAmbient(value);
+        }
+
         public async Task DeviceStatusSend(string device)
         {
             Hardware.Device.Status = device;            

@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Drawing;
+using System.Dynamic;
 using System.IO;
 using System.Text;
+using Gadget = Hardware;
 
 namespace Domotica.Core.Hardware
 {
@@ -22,6 +26,29 @@ namespace Domotica.Core.Hardware
 
             Writer.Write(command);
             Writer.Flush();
+        }
+
+        public static void ExecuteAmbient(string cmd)
+        {
+            Dimmer(cmd);
+        }
+
+        private static void Dimmer(string json)
+        {
+            using var apa102 = new Gadget.Device(8);
+
+            if (!apa102.IsReady) return;
+
+            dynamic cmd = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
+            
+            int brightness = Convert.ToInt32(cmd.LedRGBStripe.Brightness * 255);
+            int red = Convert.ToInt32(cmd.LedRGBStripe.Color.R);
+            int green = Convert.ToInt32(cmd.LedRGBStripe.Color.G);
+            int blue = Convert.ToInt32(cmd.LedRGBStripe.Color.B);
+
+            apa102.Color = Color.FromArgb(brightness, red, green, blue);
+            apa102.Dim(brightness);
+            apa102.Flush();
         }
     }
 }

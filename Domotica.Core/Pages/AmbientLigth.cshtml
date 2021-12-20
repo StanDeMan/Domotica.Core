@@ -1,0 +1,97 @@
+﻿@page
+@model Domotica.Core.Pages.AmbientLightModel
+@{
+    ViewData["Title"] = "Control hosting page";
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>Ambient Light Control</title>
+
+        <link href="lib/metro-ui/css/metro-colors.css" rel="stylesheet" />
+        <link href="css/site.css" rel="stylesheet" />
+      
+        <style>
+            #picker {padding-top: 24px; text-align: center;}
+            #picker div{display: inline-block;}
+            #picker input{width: 400px; border: 1px solid lightgrey}
+        </style>
+
+        <script src="lib/jquery/jquery.slim.min.js"></script> 
+        <script src="lib/controls/colorpicker.min.js"></script> 
+        <script src="lib/signalr/signalr.min.js"></script>
+    </head>
+    <body class="bg-cyan">
+        <div>                        
+            <div id="picker">
+                <div id="color-picker"></div>
+                <p>
+                     <input id="color" type="text" value="none" readonly/>
+                </p>                
+            </div>
+        </div>
+       
+        <!--Add script to update the page and send messages.-->
+        <script type="text/javascript">
+            var device = {
+                "Name": "Device",
+                "LedRGBStripe": {
+                    "Brightness": 0,
+                    "Color": {
+                        "R": 0,
+                        "G": 0,
+                        "B": 0
+                    }
+                }
+            };
+           
+            // connect to SignalR hub
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/hubs/device")
+                .build();
+
+            connection.start()
+                .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device))
+                .catch(err => console.error(err.toString())));
+
+            connection.on('deviceStatusInitial', (status) => {
+                if (status) {
+                    // The first client reading the device status gets here inside
+                    device = JSON.parse(status);
+                }
+            });
+
+            SendCommand = function (device) {
+                connection.invoke("sendAmbientCommand", device).catch(err => console.error(err.toString()));
+            };
+
+            $(document).ready(function () {
+                var colorPicker = new KellyColorPicker({
+                    place: 'color-picker',
+                    input: 'color',
+                    input_format: 'rgba',
+                    size: 380,
+                    method: 'triangle',
+                    alpha_slider: true
+                });
+
+                var onChange = function() {
+                    var rgba = colorPicker.getCurColorRgba();
+                    
+                    device.LedRGBStripe.Color.R = rgba.r;
+                    device.LedRGBStripe.Color.G = rgba.g; 
+                    device.LedRGBStripe.Color.B = rgba.b; 
+                    device.LedRGBStripe.Brightness = rgba.a;
+
+                    SendCommand(JSON.stringify(device));
+                };
+
+                colorPicker.setColorByHex('#FFFF00');
+                colorPicker.addUserEvent("change", onChange);                
+            });
+        </script>
+    </body>
+}
+
