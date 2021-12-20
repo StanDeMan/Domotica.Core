@@ -10,17 +10,16 @@
 
         <title>SwitchRange Control</title>
 
-        <link href="lib/metro-ui/css/metro.css" rel="stylesheet" />
-        <link href="lib/metro-ui/css/metro-icons.css" rel="stylesheet" />
-        <link href="lib/metro-ui/css/metro-components.css" rel="stylesheet" />
+        <link href="lib/metro-ui/css/metro-all.css" rel="stylesheet" />
+        <link href="css/site.css" rel="stylesheet" />
 
         <script src="lib/signalr/signalr.min.js"></script>
     </head>
-    <body>
+    <body class="bg-cyan">
         <!-- With icon (font) -->
-        <div class="container">
+        <div class="container bg-cyan fg-white">
             <div class="heading">
-                <span class="icon mif-switch mif-lg fg-red" id="switchIcon"></span>
+                <span class="icon mif-switch mif-lg" id="switchIcon"></span>
                 <strong><span class="title" id="BrightnessInTitle">Device - Brightness: 0%</span></strong>
             </div>
             <div class="row">
@@ -33,9 +32,9 @@
                     data-hint-always="false" 
                     data-hint-position="top"
                     data-show-min-max="true"
-                    data-cls-backside="bg-dark"
-                    data-cls-marker="bg-red border-50 custom-marker"
-                    data-cls-hint="bg-cyan custom-marker shadow-2"
+                    data-cls-backside="bg-grayMouse"
+                    data-cls-marker="bg-yellow border-50 custom-marker"
+                    data-cls-hint="bg-green custom-marker shadow-2"
                     data-cls-complete="bg-green"
                     data-cls-min-max="bg-cyan fg-white p-2 mb-3-minus">
                 </div>
@@ -67,7 +66,7 @@
                 .catch(err => console.error(err.toString())));
 
             UpdateState = function (device) {
-                OnOff();
+                SwitchState();
 
                 var strBrightnessInTile = "{0} - Brightness: {1}%";
                 strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
@@ -77,10 +76,10 @@
                 $("#deviceBrightness").attr("data-value", device.LedRGBStripe.Brightness);
             };            
             
-            OnOff = function () {
+            SwitchState = function () {
                 $("#deviceBrightness").val() === "0"
                     ? $("#switchIcon").css("color", "red")
-                    : $("#switchIcon").css("color", "green");
+                    : $("#switchIcon").css("color", "yellow");
             };   
 
             connection.on('deviceStatusReceived', (status) => {
@@ -98,7 +97,7 @@
             });
 
             $(document).ready(function () {
-                setInterval(OnOff, 250);
+                setInterval(SwitchState, 250);
                 $("#deviceBrightness").removeAttr('disabled');
 
                 $("#deviceBrightness").on("start stop move", function(){
