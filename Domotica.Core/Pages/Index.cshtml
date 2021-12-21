@@ -29,9 +29,8 @@
                     <input 
                     id="MainSwitch"
                     type="checkbox" 
-                    data-on="on" 
                     data-role="switch" 
-                    data-caption="Status" 
+                    data-caption="Turn on last Brigthness" 
                     data-cls-caption="fg-white text-bold" 
                     data-caption-position="left"
                     onclick="onMainSwitchClick(this)">
@@ -62,6 +61,7 @@
                 "Name": "Device",
                 "LedRGBStripe": {
                     "Brightness": 0,
+                    "LastValue": 100,
                     "Color": {
                         "R": 0,
                         "G": 0,
@@ -114,8 +114,11 @@
                     : document.getElementById("MainSwitch").checked = false;
             };   
 
-            function onMainSwitchClick(cb) {
-                if(cb.checked) device.LedRGBStripe.Brightness = 100;
+            function onMainSwitchClick(cb) { 
+                // save last brightness state
+                if(device.LedRGBStripe.Brightness > 0) device.LedRGBStripe.LastValue = device.LedRGBStripe.Brightness;
+
+                if(cb.checked) device.LedRGBStripe.Brightness = device.LedRGBStripe.LastValue;
                 else device.LedRGBStripe.Brightness = 0;
 
                 DeviceStatusSend(device);
