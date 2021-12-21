@@ -65,6 +65,20 @@
                 .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device))
                 .catch(err => console.error(err.toString())));
 
+            connection.on('deviceStatusReceived', (status) => {
+                // The second is taking the actual device status
+                device = JSON.parse(status);
+                UpdateState(device);
+            });
+
+            connection.on('deviceStatusInitial', (status) => {
+                if (status) {
+                    // The first client reading the device status gets here inside
+                    device = JSON.parse(status);
+                    UpdateState(device);
+                }
+            });
+
             UpdateState = function (device) {
                 SwitchState();
 
@@ -81,20 +95,6 @@
                     ? $("#switchIcon").css("color", "red")
                     : $("#switchIcon").css("color", "yellow");
             };   
-
-            connection.on('deviceStatusReceived', (status) => {
-                // The second is taking the actual device status
-                device = JSON.parse(status);
-                UpdateState(device);
-            });
-
-            connection.on('deviceStatusInitial', (status) => {
-                if (status) {
-                    // The first client reading the device status gets here inside
-                    device = JSON.parse(status);
-                    UpdateState(device);
-                }
-            });
 
             $(document).ready(function () {
                 setInterval(SwitchState, 250);
