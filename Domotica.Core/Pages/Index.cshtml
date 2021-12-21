@@ -18,14 +18,28 @@
     <body class="bg-cyan">
         <!-- With icon (font) -->
         <div class="container bg-cyan fg-white">
-            <div class="heading">
-                <span class="icon mif-switch mif-lg" id="switchIcon"></span>
-                <strong><span class="title" id="BrightnessInTitle">Device - Brightness: 0%</span></strong>
+            <div class="row">
+                <div class="cell">
+                    <div class="heading">
+                        <span class="icon mif-switch mif-lg" id="switchStatusIcon"></span>
+                        <strong><span class="title" id="BrightnessInTitle">Device - Brightness: 0%</span></strong>
+                    </div>                
+                </div>
+                <div class="cell text-right">
+                    <input 
+                    id="MainSwitch"
+                    type="checkbox" 
+                    data-on="on" 
+                    data-role="switch" 
+                    data-caption="Status" 
+                    data-cls-caption="fg-white text-bold" 
+                    data-caption-position="left"
+                    onclick="onMainSwitchClick(this)">
+                </div>
             </div>
             <div class="row">
                 <div class="cell">
-                    <input 
-                    diabled
+                    <input diabled
                     data-role="slider" 
                     id="deviceBrightness"
                     data-hint="true" 
@@ -91,10 +105,38 @@
             };            
             
             SwitchState = function () {
-                $("#deviceBrightness").val() === "0"
-                    ? $("#switchIcon").css("color", "red")
-                    : $("#switchIcon").css("color", "yellow");
+                $("#deviceBrightness").val() > 0
+                    ? $("#switchStatusIcon").css("color", "yellow")
+                    : $("#switchStatusIcon").css("color", "red");
+                   
+                $("#deviceBrightness").val() > 0
+                    ? document.getElementById("MainSwitch").checked = true
+                    : document.getElementById("MainSwitch").checked = false;
             };   
+
+            function onMainSwitchClick(cb) {
+                if(cb.checked) device.LedRGBStripe.Brightness = 100;
+                else device.LedRGBStripe.Brightness = 0;
+
+                DeviceStatusSend(device);
+            }
+
+            function DeviceStatusSend() {
+                connection.invoke("deviceStatusSend", JSON.stringify(device)).catch(err => console.error(err.toString()));
+
+                // the slider value is ranging from 0 to 255 -> this is why we multiply with 2.55
+                var valuePwm = Math.round(device.LedRGBStripe.Brightness * 2.55);
+                device.LedRGBStripe.Color.R = valuePwm;
+                device.LedRGBStripe.Color.G = valuePwm;
+                device.LedRGBStripe.Color.B = valuePwm;
+
+                device.LedRGBStripe.Brightness === 0
+                    ? connection.invoke("sendCommand", "p 4 0 p 14 0 p 3 0").catch(err => console.error(err.toString()))
+                    : connection.invoke("sendCommand", "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm)
+                    .catch(err => console.error(err.toString()));
+
+                UpdateState(device);
+            }
 
             $(document).ready(function () {
                 setInterval(SwitchState, 250);
@@ -102,20 +144,7 @@
 
                 $("#deviceBrightness").on("start stop move", function(){
                     device.LedRGBStripe.Brightness = Math.round(this.value);                       
-                    connection.invoke("deviceStatusSend", JSON.stringify(device)).catch(err => console.error(err.toString()));
-
-                    // the slider value is ranging from 0 to 255 -> this is why we multiply with 2.55
-                    var valuePwm = Math.round(device.LedRGBStripe.Brightness * 2.55);
-                    device.LedRGBStripe.Color.R = valuePwm;
-                    device.LedRGBStripe.Color.G = valuePwm;
-                    device.LedRGBStripe.Color.B = valuePwm;
-
-                    device.LedRGBStripe.Brightness === "0" 
-                        ? connection.invoke("sendCommand", "p 4 0 p 14 0 p 3 0").catch(err => console.error(err.toString()))
-                        : connection.invoke("sendCommand", "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm)
-                        .catch(err => console.error(err.toString()));
-
-                    UpdateState(device);
+                    DeviceStatusSend();
                 });
             });
         </script>
