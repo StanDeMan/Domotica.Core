@@ -60,11 +60,11 @@ a {
     margin-bottom: 120px;
 }
 
-    .example-top a {
-        font-size: 16px;
-        color: #6d5ad6;
-        font-weight: bold;
-    }
+.example-top a {
+    font-size: 16px;
+    color: #6d5ad6;
+    font-weight: bold;
+}
 
 .examples-list {
     max-width: 640px;
@@ -74,23 +74,23 @@ a {
     box-sizing: border-box;
 }
 
-    .examples-list ul {
-        text-align: left;
-        margin: 0px;
-        padding: 0px;
-    }
+.examples-list ul {
+    text-align: left;
+    margin: 0px;
+    padding: 0px;
+}
 
-    .examples-list li {
-        list-style-type: none;
-        padding: 6px;
-        padding-left: 0px;
-    }
+.examples-list li {
+    list-style-type: none;
+    padding: 6px;
+    padding-left: 0px;
+}
 
-        .examples-list li a {
-            font-size: 16px;
-            color: #6d5ad6;
-            font-weight: bold;
-        }
+.examples-list li a {
+    font-size: 16px;
+    color: #6d5ad6;
+    font-weight: bold;
+}
 
 .multi-input {
     border: 2px solid rgba(70, 70, 70, 0.18);
@@ -98,7 +98,7 @@ a {
     text-align: center;
 }
 
-    .multi-input.selected {
-        border: 2px solid #000;
-    }
+.multi-input.selected {
+    border: 2px solid #000;
+}
 
