@@ -14477,7 +14477,7 @@ html.metro-touch-device .streamer .stream.focused .stream-icon {
   -webkit-user-select: none;
           user-select: none;
   cursor: pointer;
-  height: 36px;
+  height: 28px;
 }
 .switch input {
   width: 1px;
