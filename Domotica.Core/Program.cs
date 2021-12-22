@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.GetSection(nameof(PropertyConfig)).Bind(new PropertyConfig());
+builder.Configuration.GetSection(nameof(DeviceConfig)).Bind(new DeviceConfig());
 
 // Add services to the container.
 builder.Services.AddMvc(option => option.EnableEndpointRouting = false);

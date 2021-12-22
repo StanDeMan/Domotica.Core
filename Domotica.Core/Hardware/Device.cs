@@ -29,7 +29,7 @@ namespace Domotica.Core.Hardware
         private static string SetName(string status)
         {
             dynamic data = JObject.Parse(status);
-            data.Name = PropertyConfig.Name;
+            data.Name = DeviceConfig.Name;
             Status = data.ToString();
 
             return Status;
