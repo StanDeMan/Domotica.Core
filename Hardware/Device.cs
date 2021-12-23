@@ -15,13 +15,6 @@ namespace Hardware
             None = 3
         }
 
-        public enum EnmBrightness
-        {
-            None = 0,
-            Middle = 127,
-            Full = 255
-        }
-
         public readonly Apa102? Apa102;
         
         public bool IsReady { get; set; }
@@ -29,8 +22,6 @@ namespace Hardware
         public int Quantity { get; set; }
 
         public Color Color { get; set; } = Color.White;
-
-        public EnmBrightness Brightness { get; set; }
 
         public Device(int quantity)
         {
