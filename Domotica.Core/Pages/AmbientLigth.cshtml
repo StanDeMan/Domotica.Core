@@ -39,10 +39,10 @@
                 "Name": "Device",
                 "LedRGBStripe": {
                     "Color": {
-                        "A": 0,
+                        "A": 0.85,
                         "R": 0,
-                        "G": 0,
-                        "B": 0
+                        "G": 255,
+                        "B": 255
                     }
                 }
             };
@@ -54,13 +54,8 @@
                 "b": 0
             };
 
-            var colorRgb = {
-                "r": 0,
-                "g": 0,
-                "b": 0
-            };
+            var colorPicker = null;
 
-           
             // connect to SignalR hub
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/hubs/device")
@@ -75,39 +70,49 @@
                     // The first client reading the device status gets here inside
                     device = JSON.parse(status);
 
-                    colorRgb.r = device.LedRGBStripe.Color.R;
-                    colorRgb.g = device.LedRGBStripe.Color.G; 
-                    colorRgb.b = device.LedRGBStripe.Color.B; 
-                    var alpha = device.LedRGBStripe.Color.A;
+                    colorRgba.r = device.LedRGBStripe.Color.R;
+                    colorRgba.g = device.LedRGBStripe.Color.G; 
+                    colorRgba.b = device.LedRGBStripe.Color.B; 
+                    colorRgba.a = device.LedRGBStripe.Color.A;
 
-                    colorPicker.setColor(colorRgb);
-                    colorPicker.setAlpha(alpha);
+                    ReadColor(colorRgba);
                 }
             });
+            
+            ReadColor = function (colorRgba) {
+                // if not comming from deviceStatusInitial
+                if(colorRgba === null) {
+                    colorRgba = colorPicker.getCurColorRgba();
+                } 
+
+                device.LedRGBStripe.Color.R = colorRgba.r;
+                device.LedRGBStripe.Color.G = colorRgba.g; 
+                device.LedRGBStripe.Color.B = colorRgba.b; 
+                device.LedRGBStripe.Color.A = colorRgba.a;
+
+                colorPicker.setAlpha(colorRgba.a);
+                $("#color").val("rgba(" + colorRgba.r + ", " + colorRgba.g + ", " + colorRgba.b + ", " + colorRgba.a + ")");
+
+                connection.invoke("sendAmbientCommand", JSON.stringify(device))
+                .catch(err => console.error(err.toString()));            
+            };    
 
             $(document).ready(function () {
-                var colorPicker = new KellyColorPicker({
+                colorPicker = new KellyColorPicker({
                     place: 'color-picker',
                     input: 'color',
-                    input_format: 'rgba',
+                    inputFormat: 'rgba',
+                    inputColor: true,
                     size: 360,
                     method: 'triangle',
-                    alpha_slider: true
+                    alphaSlider: true
                 });
 
                 var onChange = function() {                  
-                    colorRgba = colorPicker.getCurColorRgba();
-                    
-                    device.LedRGBStripe.Color.R = colorRgba.r;
-                    device.LedRGBStripe.Color.G = colorRgba.g; 
-                    device.LedRGBStripe.Color.B = colorRgba.b; 
-                    device.LedRGBStripe.Color.A = colorRgba.a;
-
-                    connection.invoke("sendAmbientCommand", JSON.stringify(device))
-                    .catch(err => console.error(err.toString()));
+                    ReadColor(null);
                 };
-
-                colorPicker.addUserEvent("change", onChange);                
+                
+                colorPicker.addUserEvent("change", onChange);
             });
         </script>
     </body>
