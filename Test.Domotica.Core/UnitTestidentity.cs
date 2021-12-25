@@ -7,11 +7,21 @@ namespace Test.Domotica.Core
     public class UnitTestIdentity
     {
         [TestMethod]
-        public void TestReadToken()
+        public void TestGenerateToken()
         {
             var token = new Token().Generate();
 
-            Assert.IsNotNull(token);    
+            Assert.IsNotNull(token);  
+            Assert.AreEqual(12, token.Length);  // default: set to 12 chars
+        }
+
+        [TestMethod]
+        public void TestGenerateWithSeedToken()
+        {
+            var token = new Token(12345678).Generate();
+
+            Assert.IsNotNull(token);  
+            Assert.AreEqual(12, token.Length);  // default: set to 12 chars
         }
     }
 }
