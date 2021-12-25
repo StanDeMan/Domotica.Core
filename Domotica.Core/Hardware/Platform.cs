@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Network = System.Net; 
+using SysNet = System.Net; 
 
 namespace Domotica.Core.Hardware
 {
@@ -52,7 +52,7 @@ namespace Domotica.Core.Hardware
         private static EnmOperatingSystem RunOnLinux()
         {
             DevicePath = GpioFile;
-            Dns = $"{Network.Dns.GetHostName()}.local";
+            Dns = $"{SysNet.Dns.GetHostName()}.local";
 
             return EnmOperatingSystem.Linux;
         }
