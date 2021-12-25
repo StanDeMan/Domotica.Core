@@ -80,10 +80,14 @@
             });
             
             ReadColor = function (colorRgba) {
-                // if not comming from deviceStatusInitial
-                if(colorRgba === null) {
+                // if not coming from deviceStatusInitial
+                if(colorRgba === null || colorRgba === undefined) {
                     colorRgba = colorPicker.getCurColorRgba();
-                } 
+                }
+
+                // if still no object present
+                if(colorRgba === null || colorRgba === undefined)
+                    return;
 
                 device.LedRGBStripe.Color.R = colorRgba.r;
                 device.LedRGBStripe.Color.G = colorRgba.g; 
@@ -98,7 +102,7 @@
             };    
 
             $(document).ready(function () {
-                colorPicker = new KellyColorPicker({
+                colorPicker = new window.KellyColorPicker({
                     place: 'color-picker',
                     input: 'color',
                     inputFormat: 'rgba',
