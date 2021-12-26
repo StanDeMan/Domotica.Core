@@ -61,9 +61,9 @@
                 "DeviceId": "TIxnxU38dzkm",
                 "Name": "Device",
                 "LedRGBStripe": {
-                    "Brightness": 0,
                     "LastValue": 100,
                     "Color": {
+                        "A": 0,
                         "R": 0,
                         "G": 0,
                         "B": 0
@@ -99,10 +99,10 @@
 
                 var strBrightnessInTile = "{0} - Brightness: {1}%";
                 strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
-                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.LedRGBStripe.Brightness);
+                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.LedRGBStripe.Color.A);
 
                 $("#BrightnessInTitle").text(strBrightnessInTile);
-                $("#deviceBrightness").attr("data-value", device.LedRGBStripe.Brightness);
+                $("#deviceBrightness").attr("data-value", device.LedRGBStripe.Color.A);
             };            
             
             SwitchState = function () {
@@ -117,10 +117,10 @@
 
             function onMainSwitchClick(cb) { 
                 // save last brightness state
-                if(device.LedRGBStripe.Brightness > 0) device.LedRGBStripe.LastValue = device.LedRGBStripe.Brightness;
+                if(device.LedRGBStripe.Color.A > 0) device.LedRGBStripe.LastValue = device.LedRGBStripe.Color.A;
 
-                if(cb.checked) device.LedRGBStripe.Brightness = device.LedRGBStripe.LastValue;
-                else device.LedRGBStripe.Brightness = 0;
+                if(cb.checked) device.LedRGBStripe.Color.A = device.LedRGBStripe.LastValue;
+                else device.LedRGBStripe.Color.A = 0;
 
                 DeviceStatusSend(device);
             }
@@ -129,12 +129,12 @@
                 connection.invoke("deviceStatusSend", JSON.stringify(device)).catch(err => console.error(err.toString()));
 
                 // the slider value is ranging from 0 to 255 -> this is why we multiply with 2.55
-                var valuePwm = Math.round(device.LedRGBStripe.Brightness * 2.55);
+                var valuePwm = Math.round(device.LedRGBStripe.Color.A * 2.55);
                 device.LedRGBStripe.Color.R = valuePwm;
                 device.LedRGBStripe.Color.G = valuePwm;
                 device.LedRGBStripe.Color.B = valuePwm;
 
-                device.LedRGBStripe.Brightness === 0
+                device.LedRGBStripe.Color.A === 0
                     ? connection.invoke("sendCommand", "p 4 0 p 14 0 p 3 0").catch(err => console.error(err.toString()))
                     : connection.invoke("sendCommand", "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm)
                     .catch(err => console.error(err.toString()));
@@ -147,7 +147,7 @@
                 $("#deviceBrightness").removeAttr('disabled');
 
                 $("#deviceBrightness").on("start stop move", function(){
-                    device.LedRGBStripe.Brightness = Math.round(this.value);                       
+                    device.LedRGBStripe.Color.A = Math.round(this.value);                       
                     DeviceStatusSend();
                 });
             });
