@@ -46,9 +46,6 @@ namespace Test.Domotica.Core
             var deviceId = device.Value<string>("DeviceId") ?? "";
 
             var ok = await store.InsertAsync(json);
-
-            // file was present 
-            if(!ok) File.Delete($"{store.DataBaseName}.json");
             Assert.IsTrue(ok);
 
             var (okRead, readJson) = await store.ReadAsync(deviceId);
