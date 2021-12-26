@@ -1,4 +1,5 @@
-﻿using DataBase;
+﻿using System.IO;
+using DataBase;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -35,10 +36,10 @@ namespace Test.Domotica.Core
                 }";
 
 
-            var ok = await store.Insert(json);
+            var (ok, id) = await store.InsertAsync(json);
             Assert.IsTrue(ok);
 
-            var (okRead, readJson) = await store.Read(0);
+            var (okRead, readJson) = await store.ReadAsync(id);
             Assert.IsTrue(okRead);
 
             var storedJson = JsonConvert.SerializeObject(readJson);
@@ -46,6 +47,8 @@ namespace Test.Domotica.Core
 
             var equal = JToken.DeepEquals(storedJson, oldJson);
             Assert.IsTrue(equal);
+
+            File.Delete($"{store.DataBaseName}.json");
         }
     }
 }

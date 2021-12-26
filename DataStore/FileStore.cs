@@ -10,16 +10,17 @@ namespace DataBase
         private const string CollectionName = "devices";
 
         public bool IsRunning { get; set; }
+       
         public string? DataBaseName { get; } = DbName;
 
-        private readonly DataStore? _store;
+        public DataStore? DataStore { get; }
 
         public FileStore(string? dataBaseName = null)
         {
             try
             {
                 // Generate store with upper camel case json
-                _store = dataBaseName == null 
+                DataStore = dataBaseName == null 
                     ? new DataStore($"{DataBaseName}.json", false) 
                     : new DataStore($"{DbName}.json", false);
 
@@ -40,33 +41,34 @@ namespace DataBase
             }
         }
 
-        public async Task<bool> Insert(string json)
+        public async Task<(bool, int)> InsertAsync(string json)
         {
             try
             {
                 var deviceJson = JToken.Parse(json);
-
-                var collection = _store?.GetCollection(CollectionName);
-
+                var collection = DataStore?.GetCollection(CollectionName);
                 var ok = await collection?.InsertOneAsync(deviceJson)!;
-
-                return ok;
+                int nextId = Convert.ChangeType(collection.GetNextIdValue(), typeof(int));
+                
+                return (ok, --nextId);
             }
             catch (Exception e)
             {
                 Log.Error($"DataBase.File.Insert: {e}");
                 
-                return false;
+                return (false, 0);
             }
         }
 
-        public async Task<(bool, dynamic)> Read(int id)
+        public async Task<(bool, dynamic)> ReadAsync(int id)
         {
             try
             {
-                var collection = _store?.GetCollection(CollectionName);
+                var collection = DataStore?.GetCollection(CollectionName);
 
-                var result =  await Task.Run(() => collection?.AsQueryable().FirstOrDefault(e => e.Id == id)!);
+                var result =  await Task.Run(() => collection?
+                    .AsQueryable()
+                    .FirstOrDefault(e => e.Id == id)!);
 
                 return (true, result);
             }
@@ -78,13 +80,12 @@ namespace DataBase
             }
         }
 
-        public async Task<bool> Update(int id, string json)
+        public async Task<bool> UpdateAsync(int id, string json)
         {
             try
             {
                 var deviceJson = JToken.Parse(json);
-
-                var collection = _store?.GetCollection(CollectionName);
+                var collection = DataStore?.GetCollection(CollectionName);
 
                 return await collection?.UpdateOneAsync(e => e.Id == id, deviceJson)!;
             }
@@ -96,11 +97,11 @@ namespace DataBase
             }
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {
-                var collection = _store?.GetCollection(CollectionName);
+                var collection = DataStore?.GetCollection(CollectionName);
                 
                 return await collection?.DeleteOneAsync(e => e.Id == id)!;
             }
@@ -114,7 +115,7 @@ namespace DataBase
 
         public void Dispose()
         {
-            _store?.Dispose();
+            DataStore?.Dispose();
         }
     }
 }
