@@ -46,9 +46,7 @@ namespace DataBase
             {
                 var device = JToken.Parse(json);
 
-                var ok = await DataStore?.InsertItemAsync(device.Value<string>("DeviceId"), device)!;
-
-                return ok;
+                return await DataStore?.InsertItemAsync(device.Value<string>("DeviceId"), device)!;
             }
             catch (Exception e)
             {

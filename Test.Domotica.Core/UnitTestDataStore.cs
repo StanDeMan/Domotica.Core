@@ -36,19 +36,40 @@ namespace Test.Domotica.Core
                 }";
 
 
+            var device = JToken.Parse(json);
+            var deviceId = device.Value<string>("DeviceId") ?? "";
+
             var ok = await store.InsertAsync(json);
+
+            // file was present 
+            if(!ok) File.Delete($"{store.DataBaseName}.json");
             Assert.IsTrue(ok);
 
-            //var (okRead, readJson) = await store.ReadAsync(id);
-            //Assert.IsTrue(okRead);
+            var (okRead, readJson) = await store.ReadAsync(deviceId);
+            Assert.IsTrue(okRead);
 
-            //var storedJson = JsonConvert.SerializeObject(readJson);
-            //var oldJson = JsonConvert.SerializeObject(JToken.Parse(json));
+            var storedJson = JsonConvert.SerializeObject(readJson);
+            var oldJson = JsonConvert.SerializeObject(device);
 
-            //var equal = JToken.DeepEquals(storedJson, oldJson);
-            //Assert.IsTrue(equal);
+            var equal = JToken.DeepEquals(storedJson, oldJson);
+            Assert.IsTrue(equal);
 
-            //File.Delete($"{store.DataBaseName}.json");
+            // Update the value of the property: 
+            var jObject = JsonConvert.DeserializeObject(json) as JObject;
+            var jToken = jObject?.SelectToken("Name")!;
+            jToken.Replace("LedStripe");
+
+            ok = await store.UpdateAsync(jObject?.ToString()!);
+            Assert.IsTrue(ok);
+
+            (okRead, readJson) = await store.ReadAsync(deviceId);
+            Assert.IsTrue(okRead);
+            Assert.AreEqual("LedStripe", readJson.Name);
+
+            ok = await store.DeleteAsync(deviceId);
+            Assert.IsTrue(ok);
+
+            File.Delete($"{store.DataBaseName}.json");
         }
     }
 }
