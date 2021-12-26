@@ -38,9 +38,23 @@ namespace Test.Domotica.Core
                             'G': 0,
                             'B': 0
                         }
-                    }
+                    },
+                    'Id': 0
                 }";
 
+            const string jsonAmbient =
+                @"{
+                    'DeviceId': '76JDzL3xwLCT',
+                    'Name': 'Device',
+                    'AmbientLigth': {
+                        'Color': {
+                            'A': 0.85,
+                            'R': 0,
+                            'G': 255,
+                            'B': 255
+                        }
+                    }
+                }";
 
             var device = JToken.Parse(json);
             var deviceId = device.Value<string>("DeviceId") ?? "";
@@ -48,8 +62,8 @@ namespace Test.Domotica.Core
             var ok = await store.InsertAsync(json);
             Assert.IsTrue(ok);
 
-            var (okRead, readJson) = await store.ReadAsync(deviceId);
-            Assert.IsTrue(okRead);
+            var readJson = await store.ReadAsync(json);
+            Assert.IsNotNull(readJson);
 
             var storedJson = JsonConvert.SerializeObject(readJson);
             var oldJson = JsonConvert.SerializeObject(device);
@@ -65,11 +79,21 @@ namespace Test.Domotica.Core
             ok = await store.UpdateAsync(jObject?.ToString()!);
             Assert.IsTrue(ok);
 
-            (okRead, readJson) = await store.ReadAsync(deviceId);
-            Assert.IsTrue(okRead);
-            Assert.AreEqual("LedStripe", readJson.Name);
+            readJson = await store.ReadAsync(json);
+            Assert.IsNotNull(readJson);
+            Assert.AreEqual("LedStripe", readJson?.Name);
 
-            ok = await store.DeleteAsync(deviceId);
+            ok = await store.InsertAsync(jsonAmbient);
+            Assert.IsTrue(ok);
+
+            readJson = await store.ReadAsync(jsonAmbient);
+            Assert.IsNotNull(readJson);
+            Assert.AreEqual("76JDzL3xwLCT", readJson?.DeviceId);
+
+            ok = await store.DeleteAsync(json);
+            Assert.IsTrue(ok);
+
+            ok = await store.DeleteAsync(jsonAmbient);
             Assert.IsTrue(ok);
 
             File.Delete($"{store.DataBaseName}.json");

@@ -7,6 +7,7 @@ namespace DataBase
     public class FileStore : IDisposable
     {
         private const string DbName = "database";
+        private const string CollectionName = "devices";
 
         public bool IsRunning { get; set; }
        
@@ -45,8 +46,9 @@ namespace DataBase
             try
             {
                 var device = JToken.Parse(json);
+                var collection = DataStore?.GetCollection(CollectionName);
 
-                return await DataStore?.InsertItemAsync(device.Value<string>("DeviceId"), device)!;
+                return await collection?.InsertOneAsync(device)!;
             }
             catch (Exception e)
             {
@@ -56,19 +58,22 @@ namespace DataBase
             }
         }
 
-        public async Task<(bool, dynamic)> ReadAsync(string deviceId)
+        public async Task<dynamic?> ReadAsync(string json)
         {
             try
             {
-                var result =  await Task.Run(() => DataStore?.GetItem(deviceId)!);
-
-                return (true, result);
+                var device = JToken.Parse(json);
+                var collection = DataStore?.GetCollection(CollectionName);
+                
+                return await Task.Run(() => collection?
+                    .AsQueryable()
+                    .FirstOrDefault(d => d.DeviceId == device.Value<string>("DeviceId")));
             }
             catch (Exception e)
             {
                 Log.Error($"DataBase.File.ReadAsync: {e}");
 
-                return (false, string.Empty);
+                return null;
             }
         }
 
@@ -77,8 +82,10 @@ namespace DataBase
             try
             {
                 var device = JToken.Parse(json);
+                var collection = DataStore?.GetCollection(CollectionName);
 
-                return await DataStore?.UpdateItemAsync(device.Value<string>("DeviceId"), device)!;
+                return await collection?
+                    .UpdateOneAsync(d => d.DeviceId == device.Value<string>("DeviceId"), device)!;
             }
             catch (Exception e)
             {
@@ -88,11 +95,15 @@ namespace DataBase
             }
         }
 
-        public async Task<bool> DeleteAsync(string deviceId)
+        public async Task<bool> DeleteAsync(string json)
         {
             try
             {
-                return await DataStore?.DeleteItemAsync(deviceId)!;
+                var device = JToken.Parse(json);
+                var collection = DataStore?.GetCollection(CollectionName);
+
+                return await collection?
+                    .DeleteOneAsync(d => d.DeviceId == device.Value<string>("DeviceId"))!;
             }
             catch (Exception e)
             {
