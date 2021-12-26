@@ -15,6 +15,10 @@ namespace DataBase
 
         public DataStore? DataStore { get; }
 
+        /// <summary>
+        /// Flat file data store
+        /// </summary>
+        /// <param name="dataBaseName">Name of file to create</param>
         public FileStore(string? dataBaseName = null)
         {
             try
@@ -41,6 +45,11 @@ namespace DataBase
             }
         }
 
+        /// <summary>
+        /// Insert json 
+        /// </summary>
+        /// <param name="json">This entity</param>
+        /// <returns>true if inserted</returns>
         public async Task<bool> InsertAsync(string json)
         {
             try
@@ -58,6 +67,11 @@ namespace DataBase
             }
         }
 
+        /// <summary>
+        /// Read json
+        /// </summary>
+        /// <param name="json">Read this entity</param>
+        /// <returns>Json as dynamic</returns>
         public async Task<dynamic?> ReadAsync(string json)
         {
             try
@@ -77,6 +91,57 @@ namespace DataBase
             }
         }
 
+        /// <summary>
+        /// Read json
+        /// </summary>
+        /// <param name="id">Search for this id</param>
+        /// <returns>Json as dynamic</returns>
+        public async Task<dynamic?> ReadByIdAsync(int id)
+        {
+            try
+            {
+                var collection = DataStore?.GetCollection(CollectionName);
+                
+                return await Task.Run(() => collection?
+                    .AsQueryable()
+                    .FirstOrDefault(d => d.Id == id));
+            }
+            catch (Exception e)
+            {
+                Log.Error($"DataBase.File.ReadAsync: {e}");
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Read json
+        /// </summary>
+        /// <param name="deviceId">Search for deviceId</param>
+        /// <returns>Json as dynamic</returns>
+        public async Task<dynamic?> ReadByDeviceIdAsync(string deviceId)
+        {
+            try
+            {
+                var collection = DataStore?.GetCollection(CollectionName);
+                
+                return await Task.Run(() => collection?
+                    .AsQueryable()
+                    .FirstOrDefault(d => d.DeviceId == deviceId));
+            }
+            catch (Exception e)
+            {
+                Log.Error($"DataBase.File.ReadAsync: {e}");
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Update json
+        /// </summary>
+        /// <param name="json">This entity</param>
+        /// <returns>true id updated</returns>
         public async Task<bool> UpdateAsync(string json)
         {
             try
@@ -95,6 +160,11 @@ namespace DataBase
             }
         }
 
+        /// <summary>
+        /// Delete json
+        /// </summary>
+        /// <param name="json">This entity</param>
+        /// <returns>true if deleted</returns>
         public async Task<bool> DeleteAsync(string json)
         {
             try
@@ -104,6 +174,50 @@ namespace DataBase
 
                 return await collection?
                     .DeleteOneAsync(d => d.DeviceId == device.Value<string>("DeviceId"))!;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"DataBase.File.DeleteAsync: {e}");
+                
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Delete json
+        /// </summary>
+        /// <param name="deviceId">Search for deviceId</param>
+        /// <returns>true if deleted</returns>
+        public async Task<bool> DeleteByDeviceIdAsync(string deviceId)
+        {
+            try
+            {
+                var collection = DataStore?.GetCollection(CollectionName);
+
+                return await collection?
+                    .DeleteOneAsync(d => d.DeviceId == deviceId)!;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"DataBase.File.DeleteAsync: {e}");
+                
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Delete json
+        /// </summary>
+        /// <param name="id">Search for this id</param>
+        /// <returns>true if deleted</returns>
+        public async Task<bool> DeleteByIdAsync(int id)
+        {
+            try
+            {
+                var collection = DataStore?.GetCollection(CollectionName);
+
+                return await collection?
+                    .DeleteOneAsync(d => d.DeviceId == id)!;
             }
             catch (Exception e)
             {
