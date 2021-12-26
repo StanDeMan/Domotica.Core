@@ -217,7 +217,7 @@ namespace DataBase
                 var collection = DataStore?.GetCollection(CollectionName);
 
                 return await collection?
-                    .DeleteOneAsync(d => d.DeviceId == id)!;
+                    .DeleteOneAsync(d => d.Id == id)!;
             }
             catch (Exception e)
             {
