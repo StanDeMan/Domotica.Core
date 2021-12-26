@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Serilog;
+using Newtonsoft.Json.Linq;
 using JsonFlatFileDataStore;
-using Serilog;
 
 namespace DataBase
 {
     public class FileStore : IDisposable
     {
         private const string DbName = "database";
-        private const string CollectionName = "devices";
 
         public bool IsRunning { get; set; }
        
@@ -41,73 +40,65 @@ namespace DataBase
             }
         }
 
-        public async Task<(bool, int)> InsertAsync(string json)
+        public async Task<bool> InsertAsync(string json)
         {
             try
             {
-                var deviceJson = JToken.Parse(json);
-                var collection = DataStore?.GetCollection(CollectionName);
-                var ok = await collection?.InsertOneAsync(deviceJson)!;
-                int nextId = Convert.ChangeType(collection.GetNextIdValue(), typeof(int));
-                
-                return (ok, --nextId);
+                var device = JToken.Parse(json);
+
+                var ok = await DataStore?.InsertItemAsync(device.Value<string>("DeviceId"), device)!;
+
+                return ok;
             }
             catch (Exception e)
             {
-                Log.Error($"DataBase.File.Insert: {e}");
-                
-                return (false, 0);
-            }
-        }
-
-        public async Task<(bool, dynamic)> ReadAsync(int id)
-        {
-            try
-            {
-                var collection = DataStore?.GetCollection(CollectionName);
-
-                var result =  await Task.Run(() => collection?
-                    .AsQueryable()
-                    .FirstOrDefault(e => e.Id == id)!);
-
-                return (true, result);
-            }
-            catch (Exception e)
-            {
-                Log.Error($"DataBase.File.Read: {e}");
-
-                return (false, string.Empty);
-            }
-        }
-
-        public async Task<bool> UpdateAsync(int id, string json)
-        {
-            try
-            {
-                var deviceJson = JToken.Parse(json);
-                var collection = DataStore?.GetCollection(CollectionName);
-
-                return await collection?.UpdateOneAsync(e => e.Id == id, deviceJson)!;
-            }
-            catch (Exception e)
-            {
-                Log.Error($"DataBase.File.Update: {e}");
+                Log.Error($"DataBase.File.InsertAsync: {e}");
                 
                 return false;
             }
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<(bool, dynamic)> ReadAsync(string deviceId)
         {
             try
             {
-                var collection = DataStore?.GetCollection(CollectionName);
-                
-                return await collection?.DeleteOneAsync(e => e.Id == id)!;
+                var result =  await Task.Run(() => DataStore?.GetItem(deviceId)!);
+
+                return (true, result);
             }
             catch (Exception e)
             {
-                Log.Error($"DataBase.File.Delete: {e}");
+                Log.Error($"DataBase.File.ReadAsync: {e}");
+
+                return (false, string.Empty);
+            }
+        }
+
+        public async Task<bool> UpdateAsync(string json)
+        {
+            try
+            {
+                var device = JToken.Parse(json);
+
+                return await DataStore?.UpdateItemAsync(device.Value<string>("DeviceId"), device)!;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"DataBase.File.UpdateAsync: {e}");
+                
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(string deviceId)
+        {
+            try
+            {
+                return await DataStore?.DeleteItemAsync(deviceId)!;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"DataBase.File.DeleteAsync: {e}");
                 
                 return false;
             }
