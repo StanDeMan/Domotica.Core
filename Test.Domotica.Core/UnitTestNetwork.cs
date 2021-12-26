@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Test.Domotica.Core
 {
     [TestClass]
-    public class UnitTestNetwork
+    public sealed class UnitTestNetwork
     {
         [TestMethod]
         public void TestReadMacAddress()

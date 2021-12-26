@@ -7,7 +7,7 @@ using Device = Hardware.Device;
 namespace Test.Domotica.Core
 {
     [TestClass]
-    public class UnitTestDevice
+    public sealed class UnitTestDevice
     {
         [TestMethod]
         public void TestDevice()

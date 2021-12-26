@@ -8,8 +8,14 @@ using Newtonsoft.Json.Linq;
 namespace Test.Domotica.Core
 {
     [TestClass]
-    public class UnitTestDataStore
+    public sealed class UnitTestDataStore
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            File.Delete("database.json");
+        }   
+
         [TestMethod]
         public async Task TestDataStore()
         {
@@ -53,8 +59,8 @@ namespace Test.Domotica.Core
 
             var equal = JToken.DeepEquals(storedJson, oldJson);
             Assert.IsTrue(equal);
-
-            // Update the value of the property: 
+            
+            // Update the value of the property: Name -> set to LedStripe
             var jObject = JsonConvert.DeserializeObject(json) as JObject;
             var jToken = jObject?.SelectToken("Name")!;
             jToken.Replace("LedStripe");

@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Test.Domotica.Core
 {
     [TestClass]
-    public class UnitTestIdentity
+    public sealed class UnitTestIdentity
     {
         [TestMethod]
         public void TestGenerateToken()
