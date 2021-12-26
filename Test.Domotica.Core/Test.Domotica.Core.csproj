@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataStore\DataBase.csproj" />
     <ProjectReference Include="..\Domotica.Core\Domotica.Core.csproj" />
     <ProjectReference Include="..\Hardware\Hardware.csproj" />
   </ItemGroup>
