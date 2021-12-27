@@ -38,7 +38,8 @@
             var device = {
                 "DeviceId": "67DJzL3xwLCT",
                 "Name": "AmbientLigth",
-                "Device": {
+                "Params": {
+                    "Command": "Internal",
                     "Color": {
                         "A": 0.85,
                         "R": 0,
@@ -71,10 +72,10 @@
                     // The first client reading the device status gets here inside
                     device = JSON.parse(status);
 
-                    colorRgba.r = device.Device.Color.R;
-                    colorRgba.g = device.Device.Color.G; 
-                    colorRgba.b = device.Device.Color.B; 
-                    colorRgba.a = device.Device.Color.A;
+                    colorRgba.r = device.Params.Color.R;
+                    colorRgba.g = device.Params.Color.G; 
+                    colorRgba.b = device.Params.Color.B; 
+                    colorRgba.a = device.Params.Color.A;
 
                     ReadColor(colorRgba);
                 }
@@ -90,10 +91,10 @@
                 if(colorRgba === null || colorRgba === undefined)
                     return;
 
-                device.Device.Color.R = colorRgba.r;
-                device.Device.Color.G = colorRgba.g; 
-                device.Device.Color.B = colorRgba.b; 
-                device.Device.Color.A = colorRgba.a;
+                device.Params.Color.R = colorRgba.r;
+                device.Params.Color.G = colorRgba.g; 
+                device.Params.Color.B = colorRgba.b; 
+                device.Params.Color.A = colorRgba.a;
 
                 colorPicker.setAlpha(colorRgba.a);
                 $("#color").val("rgba(" + colorRgba.r + ", " + colorRgba.g + ", " + colorRgba.b + ", " + colorRgba.a + ")");

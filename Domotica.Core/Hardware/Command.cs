@@ -9,8 +9,15 @@ using Gadget = Hardware;
 
 namespace Domotica.Core.Hardware
 {
-    public static class Command
+    public sealed class Command
     {
+        public enum EnmExecState
+        {
+            None = 0,
+            Internal = 1,
+            Command = 2
+        }
+
         private static readonly StreamWriter Writer;
 
         static Command()
@@ -20,11 +27,10 @@ namespace Domotica.Core.Hardware
             Writer = new StreamWriter(fileStream, Encoding.ASCII);
         }
 
-        public static void Execute(string cmd)
+        public static void Execute(string json)
         {
-            var command = $"{cmd}\n";
-
-            Writer.Write(command);
+            var value = ReadValues(json);
+            Writer.Write($"{value.Command}\n");
             Writer.Flush();
         }
 
@@ -36,19 +42,39 @@ namespace Domotica.Core.Hardware
         private static void Dimmer(string json)
         {
             using var apa102 = new Gadget.Device(8);
-
             if (!apa102.IsReady) return;
 
-            dynamic cmd = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
-            
-            int alpha = Convert.ToInt32(cmd?.Device.Color.A * 255);
-            int red = Convert.ToInt32(cmd?.Device.Color.R);
-            int green = Convert.ToInt32(cmd?.Device.Color.G);
-            int blue = Convert.ToInt32(cmd?.Device.Color.B);
-
-            apa102.Color = Color.FromArgb(alpha, red, green, blue);
-            apa102.Dim(alpha);
+            var ledColor = ReadValues(json);
+            apa102.Color = Color.FromArgb(ledColor.Alpha, ledColor.Red, ledColor.Green, ledColor.Blue);
+            apa102.Dim(ledColor.Alpha);
             apa102.Flush();
         }
+
+        private static Value ReadValues(string json)
+        {
+            dynamic cmd = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
+
+            var execute = Convert.ToString(cmd?.Params.Command != null
+                ? (string)cmd?.Params.Command
+                : string.Empty);
+
+            return new Value
+            {
+                Command = execute,
+                Alpha = Convert.ToInt32(cmd?.Params.Color.A),
+                Red = Convert.ToInt32(cmd?.Params.Color.R),
+                Green = Convert.ToInt32(cmd?.Params.Color.G),
+                Blue = Convert.ToInt32(cmd?.Params.Color.B)
+            };
+        }
+    }
+
+    public sealed class Value
+    {
+        public string Command { get; set; } = string.Empty;
+        public int Alpha { get; set; }
+        public int Red { get; set; }
+        public int Green { get; set; }
+        public int Blue { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Domotica.Core.Config;
+﻿using System;
+using Domotica.Core.Config;
 using Newtonsoft.Json.Linq;
 
 namespace Domotica.Core.Hardware
@@ -29,10 +30,14 @@ namespace Domotica.Core.Hardware
         private static string SetName(string status)
         {
             dynamic data = JObject.Parse(status);
-            data.Name = DeviceConfig.Name;
-            Status = data.ToString();
+            
+            // if other name set -> use it
+            if (DeviceConfig.Name != string.Empty)
+            {
+                data.Name = DeviceConfig.Name;
+            }
 
-            return Status;
+            return Status = data.ToString();
         }
     }
 }

@@ -60,7 +60,8 @@
             var device = {
                 "DeviceId": "TIxnxU38dzkm",
                 "Name": "LedRGBStripe",
-                "Device": {
+                "Params": {
+                    "Command": "p 4 0 p 14 0 p 3 0",
                     "LastValue": 100,
                     "Color": {
                         "A": 0,
@@ -99,10 +100,10 @@
 
                 var strBrightnessInTile = "{0} - Brightness: {1}%";
                 strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
-                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Device.Color.A);
+                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Color.A);
 
                 $("#BrightnessInTitle").text(strBrightnessInTile);
-                $("#deviceBrightness").attr("data-value", device.Device.Color.A);
+                $("#deviceBrightness").attr("data-value", device.Params.Color.A);
             };            
             
             SwitchState = function () {
@@ -117,26 +118,35 @@
 
             function onMainSwitchClick(cb) { 
                 // save last brightness state
-                if(device.Device.Color.A > 0) device.Device.LastValue = device.Device.Color.A;
+                if(device.Params.Color.A > 0) device.Params.LastValue = device.Params.Color.A;
 
-                if(cb.checked) device.Device.Color.A = device.Device.LastValue;
-                else device.Device.Color.A = 0;
+                if(cb.checked) device.Params.Color.A = device.Params.LastValue;
+                else device.Params.Color.A = 0;
 
                 DeviceStatusSend(device);
             }
 
+            UpdateColor = function (valuePwm) {
+                // the color value is ranging from 0 to 255
+                valuePwm = Math.round(valuePwm * 2.55);
+
+                device.Params.Color.R = valuePwm;
+                device.Params.Color.G = valuePwm;
+                device.Params.Color.B = valuePwm;
+                device.Params.Command = "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm;
+            }
+
             function DeviceStatusSend() {
-                connection.invoke("deviceStatusSend", JSON.stringify(device)).catch(err => console.error(err.toString()));
+                connection.invoke("deviceStatusSend", JSON.stringify(device))
+                    .catch(err => console.error(err.toString()));
 
-                // the slider value is ranging from 0 to 255 -> this is why we multiply with 2.55
-                var valuePwm = Math.round(device.Device.Color.A * 2.55);
-                device.Device.Color.R = valuePwm;
-                device.Device.Color.G = valuePwm;
-                device.Device.Color.B = valuePwm;
+                if (device.Params.Color.A !== 0) {
+                    UpdateColor(device.Params.Color.A);
+                } else {
+                    UpdateColor(0);
+                }
 
-                device.Device.Color.A === 0
-                    ? connection.invoke("sendCommand", "p 4 0 p 14 0 p 3 0").catch(err => console.error(err.toString()))
-                    : connection.invoke("sendCommand", "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm)
+                connection.invoke("sendCommand", JSON.stringify(device))
                     .catch(err => console.error(err.toString()));
 
                 UpdateState(device);
@@ -147,7 +157,7 @@
                 $("#deviceBrightness").removeAttr('disabled');
 
                 $("#deviceBrightness").on("start stop move", function(){
-                    device.Device.Color.A = Math.round(this.value);                       
+                    device.Params.Color.A = Math.round(this.value);                       
                     DeviceStatusSend();
                 });
             });
