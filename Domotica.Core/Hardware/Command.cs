@@ -59,6 +59,7 @@ namespace Domotica.Core.Hardware
                 // catch silently -> colors are present to 0
             }
 
+            // check if in bounds
             var alpha = a > 1 
                 ? 1 
                 : (int)(a * byte.MaxValue);
