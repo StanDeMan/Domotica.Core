@@ -1,23 +1,16 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Dynamic;
 using System.IO;
 using System.Text;
 using Gadget = Hardware;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Domotica.Core.Hardware
 {
     public sealed class Command
     {
-        public enum EnmExecState
-        {
-            None = 0,
-            Internal = 1,
-            Command = 2
-        }
-
         private static readonly StreamWriter Writer;
 
         static Command()
@@ -29,8 +22,10 @@ namespace Domotica.Core.Hardware
 
         public static void Execute(string json)
         {
-            var value = ReadValues(json);
-            Writer.Write($"{value.Command}\n");
+            var param = Read(json);
+            var cmd = Convert.ToString(param.Command);
+
+            Writer.Write(@$"{cmd}{Environment.NewLine}");
             Writer.Flush();
         }
 
@@ -43,38 +38,37 @@ namespace Domotica.Core.Hardware
         {
             using var apa102 = new Gadget.Device(8);
             if (!apa102.IsReady) return;
+            
+            // preset alpha and colors
+            var alpha = 0;   
+            var red = 0;     
+            var green = 0;   
+            var blue = 0;    
 
-            var ledColor = ReadValues(json);
-            apa102.Color = Color.FromArgb(ledColor.Alpha, ledColor.Red, ledColor.Green, ledColor.Blue);
-            apa102.Dim(ledColor.Alpha);
+            try
+            {
+                var param = Read(json);
+
+                alpha = Convert.ToInt32(Convert.ToDouble(param.Color.A) * 255);     // alpha - brightness
+                red   = Convert.ToInt32(param.Color.R);                             // red
+                green = Convert.ToInt32(param.Color.G);                             // green
+                blue  = Convert.ToInt32(param.Color.B);                             // blue
+            }
+            catch (Exception)
+            {
+                // catch silently -> colors are present to 0
+            }
+
+            apa102.Color = Color.FromArgb(alpha, red, green, blue);
+            apa102.Dim(alpha);
             apa102.Flush();
         }
 
-        private static Value ReadValues(string json)
+        private static dynamic Read(string json)
         {
-            dynamic cmd = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
+            dynamic param = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
 
-            var execute = Convert.ToString(cmd?.Params.Command != null
-                ? (string)cmd?.Params.Command
-                : string.Empty);
-
-            return new Value
-            {
-                Command = execute,
-                Alpha = Convert.ToInt32(cmd?.Params.Color.A),
-                Red = Convert.ToInt32(cmd?.Params.Color.R),
-                Green = Convert.ToInt32(cmd?.Params.Color.G),
-                Blue = Convert.ToInt32(cmd?.Params.Color.B)
-            };
+            return param?.Params;   // return only parameters part
         }
-    }
-
-    public sealed class Value
-    {
-        public string Command { get; set; } = string.Empty;
-        public int Alpha { get; set; }
-        public int Red { get; set; }
-        public int Green { get; set; }
-        public int Blue { get; set; }
     }
 }
