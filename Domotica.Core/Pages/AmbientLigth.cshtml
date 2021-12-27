@@ -65,6 +65,12 @@
             connection.start()
                 .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device))
                 .catch(err => console.error(err.toString())));
+                
+            connection.on('deviceStatusReceived', (status) => {
+                // The second is taking the actual device status
+                device = JSON.parse(status);
+                UpdateState(device);
+            });
 
             connection.on('deviceStatusInitial', (status) => {
                 if (status) {
