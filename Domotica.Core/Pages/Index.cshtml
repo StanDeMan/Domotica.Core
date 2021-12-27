@@ -59,7 +59,7 @@
         <script type="text/javascript">
             var device = {
                 "DeviceId": "TIxnxU38dzkm",
-                "Name": "LedRGBStripe",
+                "Name": "RGB Led Stripe",
                 "Params": {
                     "Command": "p 4 0 p 14 0 p 3 0",
                     "LastValue": 100,
@@ -100,7 +100,7 @@
 
                 var strBrightnessInTile = "{0} - Brightness: {1}%";
                 strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
-                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Color.A);
+                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Color.A.toFixed(2));
 
                 $("#BrightnessInTitle").text(strBrightnessInTile);
                 $("#deviceBrightness").attr("data-value", device.Params.Color.A);

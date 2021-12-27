@@ -37,7 +37,7 @@
         <script type="text/javascript">
             var device = {
                 "DeviceId": "67DJzL3xwLCT",
-                "Name": "AmbientLigth",
+                "Name": "Ambient Ligth",
                 "Params": {
                     "Color": {
                         "A": 1,
@@ -86,8 +86,15 @@
                 }
             });
             
-            UpdateState = function (device) {
-                // has to come...
+            UpdateState = function (status) {
+                device = JSON.parse(status);
+
+                colorRgba.r = device.Params.Color.R;
+                colorRgba.g = device.Params.Color.G; 
+                colorRgba.b = device.Params.Color.B; 
+                colorRgba.a = device.Params.Color.A;
+
+                ReadColor(colorRgba);
             }; 
 
             ReadColor = function (colorRgba) {
@@ -106,13 +113,7 @@
                 device.Params.Color.A = colorRgba.a;
 
                 colorPicker.setAlpha(colorRgba.a);
-                $("#color").val("rgba(" + colorRgba.r + ", " + colorRgba.g + ", " + colorRgba.b + ", " + colorRgba.a + ")");
-
-                connection.invoke("deviceStatusSend", JSON.stringify(device))
-                    .catch(err => console.error(err.toString()));
-
-                connection.invoke("sendAmbientCommand", JSON.stringify(device))
-                .catch(err => console.error(err.toString()));            
+                $("#color").val("rgba(" + colorRgba.r + ", " + colorRgba.g + ", " + colorRgba.b + ", " + colorRgba.a.toFixed(2) + ")");
             };    
 
             $(document).ready(function () {
@@ -128,6 +129,12 @@
 
                 var onChange = function() {                  
                     ReadColor(null);
+
+                    connection.invoke("deviceStatusSend", JSON.stringify(device))
+                        .catch(err => console.error(err.toString()));
+
+                    connection.invoke("sendAmbientCommand", JSON.stringify(device))
+                        .catch(err => console.error(err.toString()));
                 };
                 
                 colorPicker.addUserEvent("change", onChange);
