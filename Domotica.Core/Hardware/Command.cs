@@ -40,7 +40,7 @@ namespace Domotica.Core.Hardware
             if (!apa102.IsReady) return;
             
             // preset alpha and colors
-            var alpha = 0;   
+            double a = 0;   
             var red = 0;     
             var green = 0;   
             var blue = 0;    
@@ -49,16 +49,17 @@ namespace Domotica.Core.Hardware
             {
                 var param = Read(json);
 
-                alpha = Convert.ToInt32(Convert.ToDouble(param.Color.A) * 255);     // alpha - brightness
-                red   = Convert.ToInt32(param.Color.R);                             // red
-                green = Convert.ToInt32(param.Color.G);                             // green
-                blue  = Convert.ToInt32(param.Color.B);                             // blue
+                a = Convert.ToDouble(param.Color.A);        // alpha - brightness
+                red   = Convert.ToInt32(param.Color.R);     // red
+                green = Convert.ToInt32(param.Color.G);     // green
+                blue  = Convert.ToInt32(param.Color.B);     // blue
             }
             catch (Exception)
             {
                 // catch silently -> colors are present to 0
             }
 
+            var alpha = (int)(a * 2.55);
             apa102.Color = Color.FromArgb(alpha, red, green, blue);
             apa102.Dim(alpha);
             apa102.Flush();
