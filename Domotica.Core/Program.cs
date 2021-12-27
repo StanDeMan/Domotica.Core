@@ -27,6 +27,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<Device>("/Hubs/Device");
 });
+
 app.UseMvc();
 app.UseMvcWithDefaultRoute();
 
