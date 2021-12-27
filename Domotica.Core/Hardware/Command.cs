@@ -66,9 +66,9 @@ namespace Domotica.Core.Hardware
 
         private static dynamic Read(string json)
         {
-            dynamic param = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
+            dynamic cmd = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
 
-            return param?.Params;   // return only parameters part
+            return cmd?.Params;   // return only parameters part
         }
     }
 }
