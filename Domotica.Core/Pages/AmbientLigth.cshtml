@@ -86,6 +86,10 @@
                 }
             });
             
+            UpdateState = function (device) {
+                // has to come...
+            }; 
+
             ReadColor = function (colorRgba) {
                 // if not coming from deviceStatusInitial
                 if(colorRgba === null || colorRgba === undefined) {
@@ -103,6 +107,9 @@
 
                 colorPicker.setAlpha(colorRgba.a);
                 $("#color").val("rgba(" + colorRgba.r + ", " + colorRgba.g + ", " + colorRgba.b + ", " + colorRgba.a + ")");
+
+                connection.invoke("deviceStatusSend", JSON.stringify(device))
+                    .catch(err => console.error(err.toString()));
 
                 connection.invoke("sendAmbientCommand", JSON.stringify(device))
                 .catch(err => console.error(err.toString()));            

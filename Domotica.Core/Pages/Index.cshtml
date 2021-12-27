@@ -137,14 +137,14 @@
             }
 
             function DeviceStatusSend() {
-                connection.invoke("deviceStatusSend", JSON.stringify(device))
-                    .catch(err => console.error(err.toString()));
-
                 if (device.Params.Color.A !== 0) {
                     UpdateColor(device.Params.Color.A);
                 } else {
                     UpdateColor(0);
                 }
+
+                connection.invoke("deviceStatusSend", JSON.stringify(device))
+                    .catch(err => console.error(err.toString()));
 
                 connection.invoke("sendCommand", JSON.stringify(device))
                     .catch(err => console.error(err.toString()));
