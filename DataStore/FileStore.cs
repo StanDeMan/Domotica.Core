@@ -23,10 +23,11 @@ namespace DataBase
         {
             try
             {
-                // Generate store with upper camel case json
+                // Generate store with upper camel case Json file
+                // and reload before reading collection
                 DataStore = dataBaseName == null 
-                    ? new DataStore($"{DataBaseName}.json", false) 
-                    : new DataStore($"{dataBaseName}.json", false);
+                    ? new DataStore($"{DataBaseName}.json", false, null, true) 
+                    : new DataStore($"{dataBaseName}.json", false, null, true);
 
                 DataBaseName = dataBaseName ?? DataBaseName;
 
