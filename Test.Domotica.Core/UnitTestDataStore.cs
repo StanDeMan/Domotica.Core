@@ -29,11 +29,11 @@ namespace Test.Domotica.Core
             const string json = 
                 @"{
                     'DeviceId': '67DJzL3xwLCT', 
-                    'Name': 'AmbientLigth',
-                    'LedRGBStripe': {
-                        'Brightness': 0,
+                    'Name': 'LedRGBStripe',
+                    'Device': {
                         'LastValue': 100,
                         'Color': {
+                            'A': 0.65,
                             'R': 0,
                             'G': 0,
                             'B': 0
@@ -45,8 +45,8 @@ namespace Test.Domotica.Core
             const string jsonAmbient =
                 @"{
                     'DeviceId': '76JDzL3xwLCT',
-                    'Name': 'Device',
-                    'AmbientLigth': {
+                    'Name': 'AmbientLigth',
+                    'Device': {
                         'Color': {
                             'A': 0.85,
                             'R': 0,
@@ -57,7 +57,6 @@ namespace Test.Domotica.Core
                 }";
 
             var device = JToken.Parse(json);
-            var deviceId = device.Value<string>("DeviceId") ?? "";
 
             var ok = await store.InsertAsync(json);
             Assert.IsTrue(ok);
