@@ -16,7 +16,7 @@ namespace DataBase
         public DataStore? DataStore { get; }
 
         /// <summary>
-        /// Flat file data store
+        /// Flat Json file data store
         /// </summary>
         /// <param name="dataBaseName">Name of file to create</param>
         public FileStore(string? dataBaseName = null)
