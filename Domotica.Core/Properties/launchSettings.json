@@ -11,7 +11,6 @@
     "Domotica.Core": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "AmbientLigth",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
