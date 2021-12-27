@@ -41,10 +41,10 @@ namespace Domotica.Core.Hardware
 
             dynamic cmd = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
             
-            int alpha = Convert.ToInt32(cmd.LedRGBStripe.Color.A * 255);
-            int red = Convert.ToInt32(cmd.LedRGBStripe.Color.R);
-            int green = Convert.ToInt32(cmd.LedRGBStripe.Color.G);
-            int blue = Convert.ToInt32(cmd.LedRGBStripe.Color.B);
+            int alpha = Convert.ToInt32(cmd?.Device.Color.A * 255);
+            int red = Convert.ToInt32(cmd?.Device.Color.R);
+            int green = Convert.ToInt32(cmd?.Device.Color.G);
+            int blue = Convert.ToInt32(cmd?.Device.Color.B);
 
             apa102.Color = Color.FromArgb(alpha, red, green, blue);
             apa102.Dim(alpha);
