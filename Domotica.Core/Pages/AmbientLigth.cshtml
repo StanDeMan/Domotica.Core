@@ -64,25 +64,24 @@
                     // The first client reading the device status gets here inside
                     device = JSON.parse(status);
 
-                    colorRgba.r = device.Params.Color.R;
-                    colorRgba.g = device.Params.Color.G; 
-                    colorRgba.b = device.Params.Color.B; 
-                    colorRgba.a = device.Params.Color.A;
-
-                    ReadColor(colorRgba);
+                    SaveColor(device);
+                    UpdateColor(colorRgba);
                 }
             });
             
             UpdateState = function (device) {
+                SaveColor(device);
+                UpdateColor(colorRgba);
+            };
+
+            SaveColor = function(device) {
                 colorRgba.r = device.Params.Color.R;
                 colorRgba.g = device.Params.Color.G; 
                 colorRgba.b = device.Params.Color.B; 
                 colorRgba.a = device.Params.Color.A;
+            };
 
-                ReadColor(colorRgba);
-            }; 
-
-            ReadColor = function (colorRgba) {
+            UpdateColor = function (colorRgba) {
                 // if still no object present
                 if(colorRgba === null || colorRgba === undefined)
                     return;
@@ -103,7 +102,7 @@
                 });
 
                 function colorChangeCallback(color) {
-                    ReadColor(color.rgba);
+                    UpdateColor(color.rgba);
 
                     connection.invoke("deviceStatusSend", JSON.stringify(device))
                         .catch(err => console.error(err.toString()));
