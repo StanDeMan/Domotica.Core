@@ -19,7 +19,7 @@
     </head>
     <body class="bg-cyan">
     @* ReSharper disable once UnknownCssVendorExtension *@
-    <div style="width: 100%; display:flex; flex-direction: row; -o-justify-content: center; -webkit-justify-content: center; justify-content: center;">                        
+    <div style="width: 100%; display:flex; flex-direction: row; -webkit-justify-content: center; justify-content: center;">                        
             <div id="picker"></div>
         </div>
        
@@ -32,7 +32,7 @@
                 "Params": {
                     "Color": {
                         "A": 1,
-                        "R": 255,
+                        "R": 0,
                         "G": 255,
                         "B": 255
                     }
@@ -43,7 +43,7 @@
             var colorPicker = null;
 
             // color picker color format
-            var colorRgba = { r: 255, g: 255, b: 255, a: 1 };
+            var colorRgba = { r: 0, g: 255, b: 255, a: 1 };
 
             // connect to SignalR hub
             const connection = new signalR.HubConnectionBuilder()
