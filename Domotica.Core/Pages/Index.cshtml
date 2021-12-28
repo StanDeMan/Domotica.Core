@@ -62,7 +62,7 @@
                 "Name": "RGB Led Stripe",
                 "NameId": "RGBLedStripe",
                 "Params": {
-                    "Command": "p 4 0 p 14 0 p 3 0",
+                    "Command": "p4 0 p14 0 p3 0",
                     "LastValue": 100,
                     "Color": {
                         "Brightness": 0
@@ -70,6 +70,8 @@
                 }
             };
            
+            const formatCmd = (valuePwm) => `p4 ${valuePwm} p14 ${valuePwm} p3 ${valuePwm}`;
+            
             // connect to SignalR hub
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/hubs/device")
@@ -77,7 +79,7 @@
 
             connection.start()
                 .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device))
-                .catch(err => console.error(err.toString())));
+                    .catch(err => console.error(err.toString())));
 
             connection.on('deviceStatusReceived', (status) => {
                 // The second is taking the actual device status
@@ -127,7 +129,7 @@
             UpdateColor = function (valuePwm) {
                 // the color value is ranging from 0 to 255
                 valuePwm = Math.round(valuePwm * 2.55);
-                device.Params.Command = "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm;
+                device.Params.Command = formatCmd(valuePwm);
             }
 
             function DeviceStatusSend() {
