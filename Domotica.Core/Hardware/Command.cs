@@ -13,6 +13,10 @@ namespace Domotica.Core.Hardware
     {
         private static readonly StreamWriter Writer;
 
+        /// <summary>
+        /// On development machine local path is set to: ./dev/pigpio file
+        /// On linux the path is set to pigpio deamon: /dev/pigpio
+        /// </summary>
         static Command()
         {
             var gpio = Platform.DevicePath;
