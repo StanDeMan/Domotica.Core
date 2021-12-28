@@ -39,9 +39,11 @@
                 }
             };
 
-            var colorRgba = { r: 255, g: 255, b: 255, a: 1 };
-
+            // color picker 
             var colorPicker = null;
+
+            // color picker color format
+            var colorRgba = { r: 255, g: 255, b: 255, a: 1 };
 
             // connect to SignalR hub
             const connection = new signalR.HubConnectionBuilder()
