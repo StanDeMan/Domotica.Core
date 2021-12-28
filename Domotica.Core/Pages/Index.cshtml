@@ -62,7 +62,7 @@
                 "Name": "RGB Led Stripe",
                 "NameId": "RGBLedStripe",
                 "Params": {
-                    "Command": "p4 0 p14 0 p3 0",
+                    "Command": "p 4 0 p 14 0 p 3 0",
                     "LastValue": 100,
                     "Color": {
                         "Brightness": 0
@@ -70,7 +70,7 @@
                 }
             };
            
-            const formatCmd = (valuePwm) => `p4 ${valuePwm} p14 ${valuePwm} p3 ${valuePwm}`;
+            const formatCmd = (valuePwm) => `p 4 ${valuePwm} p 14 ${valuePwm} p 3 ${valuePwm}`;
             
             // connect to SignalR hub
             const connection = new signalR.HubConnectionBuilder()
