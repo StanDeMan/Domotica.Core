@@ -13,24 +13,14 @@
         <link href="lib/metro-ui/css/metro-colors.css" rel="stylesheet" />
         <link href="css/site.css" rel="stylesheet" />
       
-        <style>
-            #picker {padding-top: 24px; text-align: center;}
-            #picker div{display: inline-block;}
-            #picker input{width: 400px; border: 1px solid lightgrey; background-color: white;}
-        </style>
-
         <script src="lib/jquery/jquery.slim.min.js"></script> 
-        <script src="lib/controls/colorpicker.min.js"></script> 
+        <script src="lib/controls/iro.min.js"></script> 
         <script src="lib/signalr/signalr.min.js"></script>
     </head>
     <body class="bg-cyan">
-        <div>                        
-            <div id="picker">
-                <div id="color-picker"></div>
-                <p>
-                     <input id="color" type="text" value="none" readonly/>
-                </p>                
-            </div>
+    @* ReSharper disable once UnknownCssVendorExtension *@
+    <div style="width: 100%; display:flex; flex-direction: row; -o-justify-content: center; -webkit-justify-content: center; justify-content: center;">                        
+            <div id="picker"></div>
         </div>
        
         <!--Add script to update the page and send messages.-->
@@ -38,22 +28,18 @@
             var device = {
                 "DeviceId": "67DJzL3xwLCT",
                 "Name": "Ambient Ligth",
+                "NameId": "AmbientLigth",
                 "Params": {
                     "Color": {
                         "A": 1,
-                        "R": 0,
+                        "R": 255,
                         "G": 255,
                         "B": 255
                     }
                 }
             };
 
-            var colorRgba = {
-                "a": 0,
-                "r": 0,
-                "g": 0,
-                "b": 0
-            };
+            var colorRgba = { r: 255, g: 255, b: 255, a: 1 };
 
             var colorPicker = null;
 
@@ -69,6 +55,7 @@
             connection.on('deviceStatusReceived', (status) => {
                 // The second is taking the actual device status
                 device = JSON.parse(status);
+
                 UpdateState(device);
             });
 
@@ -86,9 +73,7 @@
                 }
             });
             
-            UpdateState = function (status) {
-                device = JSON.parse(status);
-
+            UpdateState = function (device) {
                 colorRgba.r = device.Params.Color.R;
                 colorRgba.g = device.Params.Color.G; 
                 colorRgba.b = device.Params.Color.B; 
@@ -98,11 +83,6 @@
             }; 
 
             ReadColor = function (colorRgba) {
-                // if not coming from deviceStatusInitial
-                if(colorRgba === null || colorRgba === undefined) {
-                    colorRgba = colorPicker.getCurColorRgba();
-                }
-
                 // if still no object present
                 if(colorRgba === null || colorRgba === undefined)
                     return;
@@ -112,23 +92,18 @@
                 device.Params.Color.B = colorRgba.b; 
                 device.Params.Color.A = colorRgba.a;
 
-                colorPicker.setAlpha(colorRgba.a);
-                $("#color").val("rgba(" + colorRgba.r + ", " + colorRgba.g + ", " + colorRgba.b + ", " + colorRgba.a.toFixed(2) + ")");
+                colorPicker.color.rgba = colorRgba;
             };    
 
             $(document).ready(function () {
-                colorPicker = new window.KellyColorPicker({
-                    place: 'color-picker',
-                    input: 'color',
-                    inputFormat: 'rgba',
-                    inputColor: true,
-                    size: 360,
-                    method: 'triangle',
-                    alphaSlider: true
+                colorPicker = new iro.ColorPicker("#picker", {
+                    width: 320,
+                    color: colorRgba,
+                    sliderType: 'alpha'
                 });
 
-                var onChange = function() {                  
-                    ReadColor(null);
+                function colorChangeCallback(color) {
+                    ReadColor(color.rgba);
 
                     connection.invoke("deviceStatusSend", JSON.stringify(device))
                         .catch(err => console.error(err.toString()));
@@ -136,8 +111,8 @@
                     connection.invoke("sendAmbientCommand", JSON.stringify(device))
                         .catch(err => console.error(err.toString()));
                 };
-                
-                colorPicker.addUserEvent("change", onChange);
+                 
+                colorPicker.on("input:end", colorChangeCallback);
             });
         </script>
     </body>
