@@ -10,20 +10,41 @@
 
         <title>Ambient Light Control</title>
 
-        <link href="lib/metro-ui/css/metro-colors.css" rel="stylesheet" />
+        <link href="lib/metro-ui/css/metro-all.css" rel="stylesheet" />
         <link href="css/site.css" rel="stylesheet" />
       
-        <script src="lib/jquery/jquery.slim.min.js"></script> 
         <script src="lib/controls/iro.min.js"></script> 
         <script src="lib/signalr/signalr.min.js"></script>
     </head>
     <body class="bg-cyan">
-    @* ReSharper disable once UnknownCssVendorExtension *@
-    <div style="width: 100%; display:flex; flex-direction: row; -webkit-justify-content: center; justify-content: center;">                        
-            <div id="picker"></div>
+        <!-- With icon (font) -->
+        <div class="container bg-cyan fg-white">
+            <div class="row">
+                <div class="cell-4 offset-4">
+                    <div class="heading">
+                        <span class="icon mif-switch mif-lg" id="switchStatusIcon"></span>
+                        <strong><span class="title" id="BrightnessInTitle">Device - Brightness: 0%</span></strong>
+                    </div>                
+                </div>
+                <div class="cell-4 offset-4">
+                    <input 
+                        id="MainSwitch"
+                        type="checkbox" 
+                        data-role="switch" 
+                        data-caption="On/Off" 
+                        data-cls-caption="fg-white text-bold" 
+                        data-caption-position="left">
+                </div>
+            </div>
+            <div class="row">
+                <div class="cell-4 offset-4">
+                    <div id="picker"></div>
+                </div>
+            </div>
         </div>
-       
+
         <!--Add script to update the page and send messages.-->
+        <script src="lib/metro-ui/js/metro.js"></script>
         <script type="text/javascript">
             var device = {
                 "DeviceId": "67DJzL3xwLCT",
@@ -52,56 +73,63 @@
 
             connection.start()
                 .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device))
-                .catch(err => console.error(err.toString())));
-                
-            connection.on('deviceStatusReceived', (status) => {
-                // The second is taking the actual device status
-                device = JSON.parse(status);
+                    .catch(err => console.error(err.toString())));
 
-                UpdateState(device);
-            });
-
-            connection.on('deviceStatusInitial', (status) => {
-                if (status) {
-                    // The first client reading the device status gets here inside
+            connection.on('deviceStatusReceived',
+                (status) => {
+                    // The second is taking the actual device status
                     device = JSON.parse(status);
 
-                    SaveColor(device);
-                    UpdateColor(colorRgba);
-                }
-            });
-            
-            UpdateState = function (device) {
+                    UpdateState(device);
+                });
+
+            connection.on('deviceStatusInitial',
+                (status) => {
+                    if (status) {
+                        // The first client reading the device status gets here inside
+                        device = JSON.parse(status);
+
+                        SaveColor(device);
+                        UpdateColor(colorRgba);
+                    }
+                });
+
+            UpdateState = function(device) {
                 SaveColor(device);
                 UpdateColor(colorRgba);
             };
 
             SaveColor = function(device) {
                 colorRgba.r = device.Params.Color.R;
-                colorRgba.g = device.Params.Color.G; 
-                colorRgba.b = device.Params.Color.B; 
+                colorRgba.g = device.Params.Color.G;
+                colorRgba.b = device.Params.Color.B;
                 colorRgba.a = device.Params.Color.A;
             };
 
-            UpdateColor = function (colorRgba) {
+            UpdateColor = function(colorRgba) {
                 // if still no object present
-                if(colorRgba === null || colorRgba === undefined)
+                if (colorRgba === null || colorRgba === undefined)
                     return;
 
                 device.Params.Color.R = colorRgba.r;
-                device.Params.Color.G = colorRgba.g; 
-                device.Params.Color.B = colorRgba.b; 
+                device.Params.Color.G = colorRgba.g;
+                device.Params.Color.B = colorRgba.b;
                 device.Params.Color.A = colorRgba.a;
 
                 colorPicker.color.rgba = colorRgba;
-            };    
+            };
 
-            $(document).ready(function () {
-                colorPicker = new iro.ColorPicker("#picker", {
-                    width: 320,
-                    color: colorRgba,
-                    sliderType: 'alpha'
-                });
+            $(document).ready(function() {
+                var strBrightnessInTile = "{0} - Brightness: {1}%";
+                strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
+                $("#BrightnessInTitle").text(strBrightnessInTile);
+
+                colorPicker = new iro.ColorPicker("#picker",
+                    {
+                        width: 320,
+                        color: colorRgba,
+                        sliderType: 'alpha'
+                    });
 
                 function colorChangeCallback(color) {
                     UpdateColor(color.rgba);
@@ -112,7 +140,7 @@
                     connection.invoke("sendAmbientCommand", JSON.stringify(device))
                         .catch(err => console.error(err.toString()));
                 };
-                 
+
                 colorPicker.on("input:end", colorChangeCallback);
             });
         </script>
