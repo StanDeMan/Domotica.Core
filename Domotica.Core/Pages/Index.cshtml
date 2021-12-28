@@ -64,9 +64,7 @@
                 "Params": {
                     "Command": "p 4 0 p 14 0 p 3 0",
                     "LastValue": 100,
-                    "Color": {
-                        "Brightness": 0
-                    }
+                    "Brightness": 0
                 }
             };
            
@@ -100,10 +98,10 @@
 
                 var strBrightnessInTile = "{0} - Brightness: {1}%";
                 strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
-                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Color.Brightness);
+                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Brightness);
 
                 $("#BrightnessInTitle").text(strBrightnessInTile);
-                $("#deviceBrightness").attr("data-value", device.Params.Color.Brightness);
+                $("#deviceBrightness").attr("data-value", device.Params.Brightness);
             };            
             
             SwitchState = function () {
@@ -118,10 +116,10 @@
 
             function onMainSwitchClick(cb) { 
                 // save last brightness state
-                if(device.Params.Color.Brightness > 0) device.Params.LastValue = device.Params.Color.Brightness;
+                if(device.Params.Brightness > 0) device.Params.LastValue = device.Params.Brightness;
 
-                if(cb.checked) device.Params.Color.Brightness = device.Params.LastValue;
-                else device.Params.Color.Brightness = 0;
+                if(cb.checked) device.Params.Brightness = device.Params.LastValue;
+                else device.Params.Brightness = 0;
 
                 DeviceStatusSend(device);
             }
@@ -133,8 +131,8 @@
             }
 
             function DeviceStatusSend() {
-                if (device.Params.Color.Brightness !== 0) {
-                    UpdateColor(device.Params.Color.Brightness);
+                if (device.Params.Brightness !== 0) {
+                    UpdateColor(device.Params.Brightness);
                 } else {
                     UpdateColor(0);
                 }
@@ -153,7 +151,7 @@
                 $("#deviceBrightness").removeAttr('disabled');
 
                 $("#deviceBrightness").on("start stop move", function(){
-                    device.Params.Color.Brightness = Math.round(this.value);                       
+                    device.Params.Brightness = Math.round(this.value);                       
                     DeviceStatusSend();
                 });
             });
