@@ -60,14 +60,12 @@
             var device = {
                 "DeviceId": "TIxnxU38dzkm",
                 "Name": "RGB Led Stripe",
+                "NameId": "RGBLedStripe",
                 "Params": {
                     "Command": "p 4 0 p 14 0 p 3 0",
                     "LastValue": 100,
                     "Color": {
-                        "A": 0,
-                        "R": 0,
-                        "G": 0,
-                        "B": 0
+                        "Brightness": 0
                     }
                 }
             };
@@ -100,10 +98,10 @@
 
                 var strBrightnessInTile = "{0} - Brightness: {1}%";
                 strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
-                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Color.A.toFixed(2));
+                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Color.Brightness.toFixed(2));
 
                 $("#BrightnessInTitle").text(strBrightnessInTile);
-                $("#deviceBrightness").attr("data-value", device.Params.Color.A);
+                $("#deviceBrightness").attr("data-value", device.Params.Color.Brightness);
             };            
             
             SwitchState = function () {
@@ -118,10 +116,10 @@
 
             function onMainSwitchClick(cb) { 
                 // save last brightness state
-                if(device.Params.Color.A > 0) device.Params.LastValue = device.Params.Color.A;
+                if(device.Params.Color.Brightness > 0) device.Params.LastValue = device.Params.Color.Brightness;
 
-                if(cb.checked) device.Params.Color.A = device.Params.LastValue;
-                else device.Params.Color.A = 0;
+                if(cb.checked) device.Params.Color.Brightness = device.Params.LastValue;
+                else device.Params.Color.Brightness = 0;
 
                 DeviceStatusSend(device);
             }
@@ -129,16 +127,12 @@
             UpdateColor = function (valuePwm) {
                 // the color value is ranging from 0 to 255
                 valuePwm = Math.round(valuePwm * 2.55);
-
-                device.Params.Color.R = valuePwm;
-                device.Params.Color.G = valuePwm;
-                device.Params.Color.B = valuePwm;
                 device.Params.Command = "p 4 " + valuePwm + " " + "p 14 " + valuePwm + " " + "p 3 " + valuePwm;
             }
 
             function DeviceStatusSend() {
-                if (device.Params.Color.A !== 0) {
-                    UpdateColor(device.Params.Color.A);
+                if (device.Params.Color.Brightness !== 0) {
+                    UpdateColor(device.Params.Color.Brightness);
                 } else {
                     UpdateColor(0);
                 }
@@ -157,7 +151,7 @@
                 $("#deviceBrightness").removeAttr('disabled');
 
                 $("#deviceBrightness").on("start stop move", function(){
-                    device.Params.Color.A = Math.round(this.value);                       
+                    device.Params.Color.Brightness = Math.round(this.value);                       
                     DeviceStatusSend();
                 });
             });
