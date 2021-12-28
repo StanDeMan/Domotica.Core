@@ -100,7 +100,7 @@
 
                 var strBrightnessInTile = "{0} - Brightness: {1}%";
                 strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
-                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Color.Brightness.toFixed(2));
+                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Color.Brightness);
 
                 $("#BrightnessInTitle").text(strBrightnessInTile);
                 $("#deviceBrightness").attr("data-value", device.Params.Color.Brightness);
