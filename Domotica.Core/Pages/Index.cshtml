@@ -62,14 +62,18 @@
                 "Name": "RGB Led Stripe",
                 "NameId": "RGBLedStripe",
                 "Params": {
-                    "Command": "p 4 0 p 14 0 p 3 0",
+                    "Command": "p 3 ${valuePwm} p 4 ${valuePwm} p 14 ${valuePwm}",
                     "LastValue": 100,
                     "Brightness": 0
                 }
             };
            
-            const formatCmd = (valuePwm) => `p 4 ${valuePwm} p 14 ${valuePwm} p 3 ${valuePwm}`;
-            
+            // command: 3 channels RGB (without white)
+            const formatCmd = (valuePwm) => `p 3 ${valuePwm} p 4 ${valuePwm} p 14 ${valuePwm}`;
+
+            // device caption: device name and brightness (glow)
+            const formatCaption = (deviceName, glow) => `${deviceName} - Brightness: ${glow}%`;
+
             // connect to SignalR hub
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/hubs/device")
@@ -96,11 +100,7 @@
             UpdateState = function (device) {
                 SwitchState();
 
-                var strBrightnessInTile = "{0} - Brightness: {1}%";
-                strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
-                strBrightnessInTile = strBrightnessInTile.replace("{1}", device.Params.Brightness);
-
-                $("#BrightnessInTitle").text(strBrightnessInTile);
+                $("#BrightnessInTitle").text(formatCaption(device.Name, device.Params.Brightness));
                 $("#deviceBrightness").attr("data-value", device.Params.Brightness);
             };            
             
