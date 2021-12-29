@@ -21,12 +21,18 @@ namespace Domotica.Core.Hardware
                 : SetName(device);
         }
 
-        public static bool AddOrUpdate(string key, string newValue)
+        public static bool AddOrUpdate(string key, string device)
         {
             try
             {
-                if(DeviceList.TryGetValue(key, out _)) DeviceList[key] = newValue;
-                else DeviceList.Add(key, newValue);
+                if(DeviceList.TryGetValue(key, out _))
+                {
+                    DeviceList[key] = device;
+                }
+                else
+                {
+                    DeviceList.Add(key, device);
+                }
             }
             catch (Exception)
             {
