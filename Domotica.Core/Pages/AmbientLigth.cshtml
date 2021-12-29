@@ -130,6 +130,10 @@
                 $("#BrightnessInTitle").text(formatCaption(device.Name, Math.round(glow * 100)));
             };   
 
+            window.onbeforeunload = function () {
+                console.log('Window gets closed');
+            };
+
             $(document).ready(function() {
                 colorPicker = new iro.ColorPicker("#picker",
                     {
