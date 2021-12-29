@@ -123,11 +123,11 @@
             };
 
             SwitchState = function (glow) {
-                $("#BrightnessInTitle").text(formatCaption(device.Name, glow * 100));
-
-                glow === 0
+                 glow === 0
                     ? $("#switchStatusIcon").css("color", "red")
                     : $("#switchStatusIcon").css("color", "yellow");
+
+                $("#BrightnessInTitle").text(formatCaption(device.Name, glow * 100));
             };   
 
             $(document).ready(function() {
