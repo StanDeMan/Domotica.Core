@@ -152,6 +152,10 @@
                 UpdateState(device);
             }
 
+            window.onbeforeunload = function () {
+                console.log('Window gets closed');
+            };
+
             $(document).ready(function () {
                 setInterval(SwitchState, 250);
                 $("#deviceBrightness").removeAttr('disabled');
