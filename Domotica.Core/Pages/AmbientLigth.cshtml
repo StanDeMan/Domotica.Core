@@ -153,7 +153,8 @@
             });
 
             window.onbeforeunload = function () {
-                connection.invoke("leaveGroup", device.NameId)
+                connection
+                    .invoke("setDeviceStatusFinal", device.NameId)
                     .catch(err => console.error(err.toString()));
             };
         </script>
