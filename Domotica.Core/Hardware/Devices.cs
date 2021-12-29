@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Domotica.Core.Config;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace Domotica.Core.Hardware
 {
@@ -25,22 +26,26 @@ namespace Domotica.Core.Hardware
         {
             try
             {
+                // update
                 if(DeviceList.TryGetValue(key, out _))
                 {
                     DeviceList[key] = device;
+
+                    return true;
                 }
-                else
-                {
-                    DeviceList.Add(key, device);
-                }
+                
+                // add
+                DeviceList.Add(key, device);
+
+                return true;
+
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //TODO: do logging here...
+                Log.Error($"Devices.AddOrUpdate: {e}");
+
                 return false;
             }
-
-            return true;
         }
 
         public static bool Delete(string key)
