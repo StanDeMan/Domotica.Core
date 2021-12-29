@@ -21,20 +21,23 @@ namespace Domotica.Core.Hubs
 
         public async Task DeviceStatusSend(string device, string group)
         {
-            Hardware.Device.Status = device;            
+            Devices.AddOrUpdate(group, device);
+            
             await Clients.OthersInGroup(group).SendAsync("deviceStatusReceived", device);
         }
 
         public async Task GetDeviceStatusInitial(string device, string group)
         {
-            Hardware.Device.ReadNameFromConfig(device);
+            Devices.ChangeNameFromConfig(device);
+            Devices.AddOrUpdate(group, device);
 
             await JoinGroup(group);
-            await Clients.Caller.SendAsync("deviceStatusInitial", Hardware.Device.Status);
+            await Clients.Caller.SendAsync("deviceStatusInitial", Devices.Read(group));
         }
         // 
         public async Task SetDeviceStatusFinal(string group)
         {
+            Devices.Delete(group);
             await LeaveGroup(group);
         }
 
