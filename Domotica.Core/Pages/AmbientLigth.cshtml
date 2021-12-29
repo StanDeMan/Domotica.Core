@@ -74,7 +74,8 @@
                 .build();
 
             connection.start()
-                .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device), device.NameId)
+                .then(() => connection
+                    .invoke("getDeviceStatusInitial", JSON.stringify(device), device.NameId)
                     .catch(err => console.error(err.toString())));
 
             connection.on('deviceStatusReceived',
@@ -130,10 +131,6 @@
                 $("#BrightnessInTitle").text(formatCaption(device.Name, Math.round(glow * 100)));
             };   
 
-            window.onbeforeunload = function () {
-                console.log('Window gets closed');
-            };
-
             $(document).ready(function() {
                 colorPicker = new iro.ColorPicker("#picker",
                     {
@@ -154,6 +151,11 @@
 
                 colorPicker.on("input:end", colorChangeCallback);
             });
+
+            window.onbeforeunload = function () {
+                connection.invoke("leaveGroup", device.NameId)
+                    .catch(err => console.error(err.toString()));
+            };
         </script>
     </body>
 }
