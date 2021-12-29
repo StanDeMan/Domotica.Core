@@ -32,17 +32,13 @@
                         <strong><span class="title" id="BrightnessInTitle">Device - Brightness: 0%</span></strong>
                     </div>
                 </div>
-                <div class="row">
-                    <input
-                        id="MainSwitch"
-                        type="checkbox"
-                        data-role="switch"
-                        data-caption="On/Off"
-                        data-cls-caption="fg-white text-bold"
-                        data-caption-position="left">
+                <div class="row flex-align-end">
+                    <div class="cell"></div>    <!-- some space -->
                 </div>
-                <div class="row">
-                    <div id="picker"></div>
+                <div class="row flex-align-end">
+                    <div class="cell">
+                        <div id="picker"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -69,6 +65,8 @@
 
             // color picker color format
             var colorRgba = { r: 0, g: 255, b: 255, a: 1 };
+
+            const formatCaption = (deviceName, glow) => `${deviceName} - Brightness: ${glow}%`;
 
             // connect to SignalR hub
             const connection = new signalR.HubConnectionBuilder()
@@ -121,13 +119,18 @@
                 device.Params.Color.A = colorRgba.a;
 
                 colorPicker.color.rgba = colorRgba;
+                SwitchState(colorRgba.a);
             };
 
-            $(document).ready(function() {
-                var strBrightnessInTile = "{0} - Brightness: {1}%";
-                strBrightnessInTile = strBrightnessInTile.replace("{0}", device.Name);
-                $("#BrightnessInTitle").text(strBrightnessInTile);
+            SwitchState = function (glow) {
+                $("#BrightnessInTitle").text(formatCaption(device.Name, glow * 100));
 
+                glow === 0
+                    ? $("#switchStatusIcon").css("color", "red")
+                    : $("#switchStatusIcon").css("color", "yellow");
+            };   
+
+            $(document).ready(function() {
                 colorPicker = new iro.ColorPicker("#picker",
                     {
                         width: 300,
