@@ -27,10 +27,7 @@ namespace Domotica.Core.Hubs
 
         public async Task GetDeviceStatusInitial(string device, string group)
         {
-            if (!Hardware.Device.IsConfigured)
-            {
-                Hardware.Device.ReadNameFromConfig(device);
-            }
+            Hardware.Device.ReadNameFromConfig(device);
 
             await JoinGroup(group);
             await Clients.Caller.SendAsync("deviceStatusInitial", Hardware.Device.Status);
