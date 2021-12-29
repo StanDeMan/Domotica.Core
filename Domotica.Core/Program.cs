@@ -4,6 +4,12 @@ using Domotica.Core.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Warning()
+    .WriteTo.File(@$"logs\Domotica.Core.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.GetSection(nameof(DeviceConfig)).Bind(new DeviceConfig());
