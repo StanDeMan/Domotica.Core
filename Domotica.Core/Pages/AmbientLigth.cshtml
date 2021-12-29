@@ -127,7 +127,7 @@
                     ? $("#switchStatusIcon").css("color", "red")
                     : $("#switchStatusIcon").css("color", "yellow");
 
-                $("#BrightnessInTitle").text(formatCaption(device.Name, glow * 100));
+                $("#BrightnessInTitle").text(formatCaption(device.Name, Math.round(glow * 100)));
             };   
 
             $(document).ready(function() {
