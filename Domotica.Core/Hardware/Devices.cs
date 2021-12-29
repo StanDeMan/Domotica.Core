@@ -14,13 +14,11 @@ namespace Domotica.Core.Hardware
         // Every device knows what it is and how to deal with related data!
         private static readonly Dictionary<string, string> DeviceList = new();
 
-        public static string Status { get; set; }
-
-        public static string ChangeNameFromConfig(string status)
+        public static string ChangeNameFromConfig(string device)
         {
-            return string.IsNullOrEmpty(status) 
+            return string.IsNullOrEmpty(device) 
                 ? string.Empty 
-                : SetName(status);
+                : SetName(device);
         }
 
         public static bool AddOrUpdate(string key, string newValue)
