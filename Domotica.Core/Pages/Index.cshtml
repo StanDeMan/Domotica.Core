@@ -100,8 +100,12 @@
             UpdateState = function (device) {
                 SwitchState();
 
-                $("#BrightnessInTitle").text(formatCaption(device.Name, device.Params.Brightness));
-                $("#deviceBrightness").attr("data-value", device.Params.Brightness);
+                var glow = device.Params.Brightness === null || device.Params.Brightness === undefined 
+                    ? 0 
+                    : device.Params.Brightness;
+
+                $("#BrightnessInTitle").text(formatCaption(device.Name, glow));
+                $("#deviceBrightness").attr("data-value", glow);
             };            
             
             SwitchState = function () {
