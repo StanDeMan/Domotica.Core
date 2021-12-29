@@ -32,13 +32,18 @@ namespace Domotica.Core.Hubs
             await JoinGroup(group);
             await Clients.Caller.SendAsync("deviceStatusInitial", Hardware.Device.Status);
         }
+        // 
+        public async Task SetDeviceStatusFinal(string group)
+        {
+            await LeaveGroup(group);
+        }
 
-        public async Task JoinGroup(string groupName)
+        private async Task JoinGroup(string groupName)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
 
-        public async Task LeaveGroup(string groupName)
+        private async Task LeaveGroup(string groupName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
