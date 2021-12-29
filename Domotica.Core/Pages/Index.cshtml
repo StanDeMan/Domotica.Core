@@ -120,10 +120,12 @@
 
             function onMainSwitchClick(cb) { 
                 // save last brightness state
-                if(device.Params.Brightness > 0) device.Params.LastValue = device.Params.Brightness;
+                if(device.Params.Brightness > 0) 
+                    device.Params.LastValue = device.Params.Brightness;
 
-                if(cb.checked) device.Params.Brightness = device.Params.LastValue;
-                else device.Params.Brightness = 0;
+                device.Params.Brightness = cb.checked 
+                    ? device.Params.LastValue 
+                    : 0;
 
                 DeviceStatusSend(device);
             }
