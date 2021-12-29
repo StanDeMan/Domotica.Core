@@ -74,7 +74,7 @@
                 .build();
 
             connection.start()
-                .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device))
+                .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device), device.NameId)
                     .catch(err => console.error(err.toString())));
 
             connection.on('deviceStatusReceived',
@@ -141,7 +141,7 @@
                 function colorChangeCallback(color) {
                     UpdateColor(color.rgba);
 
-                    connection.invoke("deviceStatusSend", JSON.stringify(device))
+                    connection.invoke("deviceStatusSend", JSON.stringify(device), device.NameId)
                         .catch(err => console.error(err.toString()));
 
                     connection.invoke("sendAmbientCommand", JSON.stringify(device))

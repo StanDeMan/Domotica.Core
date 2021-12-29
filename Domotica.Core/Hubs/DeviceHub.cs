@@ -19,20 +19,31 @@ namespace Domotica.Core.Hubs
             Command.ExecuteAmbient(value);
         }
 
-        public async Task DeviceStatusSend(string device)
+        public async Task DeviceStatusSend(string device, string group)
         {
             Hardware.Device.Status = device;            
-            await Clients.Others.SendAsync("deviceStatusReceived", device);
+            await Clients.OthersInGroup(group).SendAsync("deviceStatusReceived", device);
         }
 
-        public async Task GetDeviceStatusInitial(string device)
+        public async Task GetDeviceStatusInitial(string device, string group)
         {
             if (!Hardware.Device.IsConfigured)
             {
                 Hardware.Device.ReadNameFromConfig(device);
             }
 
+            await JoinGroup(group);
             await Clients.Caller.SendAsync("deviceStatusInitial", Hardware.Device.Status);
+        }
+
+        public async Task JoinGroup(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        }
+
+        public async Task LeaveGroup(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
     }
 }

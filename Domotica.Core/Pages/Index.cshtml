@@ -80,7 +80,7 @@
                 .build();
 
             connection.start()
-                .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device))
+                .then(() => connection.invoke("getDeviceStatusInitial", JSON.stringify(device), device.NameId)
                     .catch(err => console.error(err.toString())));
 
             connection.on('deviceStatusReceived', (status) => {
@@ -143,7 +143,7 @@
                     UpdateColor(0);
                 }
 
-                connection.invoke("deviceStatusSend", JSON.stringify(device))
+                connection.invoke("deviceStatusSend", JSON.stringify(device), device.NameId)
                     .catch(err => console.error(err.toString()));
 
                 connection.invoke("sendCommand", JSON.stringify(device))
