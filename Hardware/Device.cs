@@ -47,6 +47,7 @@ namespace Hardware
 
         public void Dimmer(dynamic parameter)
         {
+            // check if SPI is initialized
             if (!IsReady) return;
 
             // preset alpha and colors
@@ -58,37 +59,36 @@ namespace Hardware
 
             try
             {
-                a = Convert.ToDouble(parameter.Color.A);        // alpha 
-                red   = Convert.ToInt32(parameter.Color.R);     // red
-                green = Convert.ToInt32(parameter.Color.G);     // green
-                blue  = Convert.ToInt32(parameter.Color.B);     // blue
+                // read Apa102 specific parameter:
+                a = Convert.ToDouble(parameter.Color.A) ?? 1;           // alpha -> set to max. brightness
+                red   = Convert.ToInt32(parameter.Color.R) ?? 0;        // red
+                green = Convert.ToInt32(parameter.Color.G) ?? 0;        // green
+                blue  = Convert.ToInt32(parameter.Color.B) ?? 0;        // blue
 
-                ledAmount = Convert.ToInt32(parameter.LedAmount) ?? 1;
-
+                ledAmount = Convert.ToInt32(parameter.LedAmount) ?? 1;  // set min. one led
             }
             catch (Exception)
             {
                 // catch silently -> colors are present to 0
             }
 
-            // minimal one APA102 LED possible
+            // check again and set LED Quantity
             Quantity = ledAmount <= 0            
                 ? 1 
                 : ledAmount;
 
             // instantiate Apa102 device
             if(_spiDevice != null) Apa102 = new Apa102(_spiDevice, Quantity);
-
             if(Apa102 == null) return;
 
             // check if in bounds
             var alpha = a > 1
-                ? byte.MaxValue                             // max. 255
-                : (int)(Math.Round(a * byte.MaxValue));     // calculate alpha for value < 1
+                ? byte.MaxValue                                 // max. 255
+                : (int)(Math.Round(a * byte.MaxValue));         // calculate alpha for value < 1
 
-            Color = Color.FromArgb(alpha, red, green, blue);
-            Dim(alpha);
-            Flush();
+            Color = Color.FromArgb(alpha, red, green, blue);    // set LED Color
+            Dim(alpha);                                         // dim all LED diodes
+            Flush();                                            // write to all LED devices
         }
 
         public void Switch(EnmState state)
