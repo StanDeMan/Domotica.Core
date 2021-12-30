@@ -15,7 +15,7 @@ namespace Hardware
             None = 3
         }
 
-        public readonly Apa102? Apa102;
+        public Apa102? Apa102;
         
         public bool IsReady { get; set; }
 
@@ -23,7 +23,7 @@ namespace Hardware
 
         public Color Color { get; set; } = Color.White;
 
-        public Device(int quantity)
+        public Device()
         {
             try
             {
@@ -34,11 +34,9 @@ namespace Hardware
                     Mode = SpiMode.Mode0            // ensure data is ready at clock rising edge
                 });
 
-                Quantity = quantity <= 0            // minimal one APA102 LED possible
-                    ? 1 
-                    : quantity;
+                if (_spiDevice == null) 
+                    throw new NullReferenceException("Cannot start SPI.");
 
-                Apa102 = new Apa102(_spiDevice, Quantity);
                 IsReady = true;
             }
             catch (Exception)
@@ -47,9 +45,48 @@ namespace Hardware
             }
         }
 
-        public void Flush()
+        public void Dimmer(dynamic parameter)
         {
-            Apa102?.Flush();
+            if (!IsReady) return;
+
+            // minimal one APA102 LED possible
+            var quantity = parameter.LedAmount ?? 1;
+
+            Quantity = quantity <= 0            
+                ? 1 
+                : quantity;
+
+            if(_spiDevice != null)
+                Apa102 = new Apa102(_spiDevice, Quantity);
+
+            if(Apa102 == null) return;
+
+            // preset alpha and colors
+            double a = 0;   
+            var red = 0;     
+            var green = 0;   
+            var blue = 0;    
+
+            try
+            {
+                a = Convert.ToDouble(parameter.Color.A);        // alpha 
+                red   = Convert.ToInt32(parameter.Color.R);     // red
+                green = Convert.ToInt32(parameter.Color.G);     // green
+                blue  = Convert.ToInt32(parameter.Color.B);     // blue
+            }
+            catch (Exception)
+            {
+                // catch silently -> colors are present to 0
+            }
+
+            // check if in bounds
+            var alpha = a > 1 
+                ? 1 
+                : (int)(a * byte.MaxValue);
+
+            Color = Color.FromArgb(alpha, red, green, blue);
+            Dim(alpha);
+            Flush();
         }
 
         public void Switch(EnmState state)
@@ -71,7 +108,12 @@ namespace Hardware
             }
         }
 
-        public void Dim(int brightness)
+        private void Flush()
+        {
+            Apa102?.Flush();
+        }
+
+        private void Dim(int brightness)
         {
             for (var i = 0; i < Apa102?.Pixels.Length; i++)
             {
