@@ -1,4 +1,6 @@
-﻿using Domotica.Core.Config;
+﻿using System;
+using System.IO;
+using Domotica.Core.Config;
 using Microsoft.Extensions.Configuration;
 using Domotica.Core.Hubs;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +10,9 @@ using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
-    .WriteTo.File(@$"logs\Domotica.Core.log", rollingInterval: RollingInterval.Day)
+    .WriteTo.File(
+        @$"{Path.GetDirectoryName(Environment.ProcessPath)}\logs\Domotica.Core.log", 
+        rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
