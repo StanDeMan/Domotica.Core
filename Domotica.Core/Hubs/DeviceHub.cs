@@ -34,7 +34,7 @@ namespace Domotica.Core.Hubs
             await JoinGroup(group);
             await Clients.Caller.SendAsync("deviceStatusInitial", Devices.Read(group));
         }
-        // 
+        
         public async Task SetDeviceStatusFinal(string group)
         {
             Devices.Delete(group);
