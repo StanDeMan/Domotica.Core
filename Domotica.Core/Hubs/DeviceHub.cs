@@ -29,13 +29,13 @@ namespace Domotica.Core.Hubs
             // check if device is stored
             switch (ok)
             {
-                // add a new one
+                // not stored: add a new one
                 case false when !string.IsNullOrEmpty(storedDevice):
                     Devices.AddOrUpdate(@group, device);
                     break;
 
                 default:
-                    // take the stored one: with set params
+                    // take the stored one
                     device = storedDevice;
                     break;
             }
