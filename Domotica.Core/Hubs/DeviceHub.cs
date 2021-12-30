@@ -50,7 +50,7 @@ namespace Domotica.Core.Hubs
         
         public async Task SetDeviceStatusFinal(string group)
         {
-            Devices.Delete(group);
+            //Devices.Delete(group);
             await LeaveGroup(group);
         }
 
