@@ -29,10 +29,23 @@ namespace Domotica.Core.Hubs
         public async Task GetDeviceStatusInitial(string device, string group)
         {
             Devices.ChangeNameFromConfig(device);
-            Devices.AddOrUpdate(group, device);
+            var (ok, storedDevice) = Devices.Read(group);
+            
+            // check if device is stored
+            switch (ok)
+            {
+                // add a new one
+                case false when !string.IsNullOrEmpty(storedDevice):
+                    Devices.AddOrUpdate(@group, device);
+                    break;
+                default:
+                    // take the stored one: with set params
+                    device = storedDevice;
+                    break;
+            }
 
             await JoinGroup(group);
-            await Clients.Caller.SendAsync("deviceStatusInitial", Devices.Read(group));
+            await Clients.Caller.SendAsync("deviceStatusInitial", device);
         }
         
         public async Task SetDeviceStatusFinal(string group)
