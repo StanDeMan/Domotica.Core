@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Text;
@@ -26,19 +27,29 @@ namespace Domotica.Core.Hardware
         public static void Execute(string json)
         {
             var parameter = ReadCmdParams(json);
-            var cmd = Convert.ToString(parameter.Command);
+            var present = HasProperty(parameter, "Command");
 
-            Writer.Write(@$"{cmd}{Environment.NewLine}");
-            Writer.Flush();
+            if (present)
+            {
+                var cmd = Convert.ToString(parameter.Command);
+
+                Writer.Write(@$"{cmd}{Environment.NewLine}");
+                Writer.Flush();
+            }
+            else
+            {
+                using var device = new Device();
+                if (!device.IsReady) return;
+
+                device.Dimmer(parameter);
+            }
         }
-
-        public static void ExecuteAmbient(string json)
+        
+        private static bool HasProperty(dynamic cmd, string name)
         {
-            using var device = new Device();
-
-            if (!device.IsReady) return;
-            var parameter = ReadCmdParams(json);
-            device.Dimmer(parameter);
+            return cmd is ExpandoObject
+                ? ((IDictionary<string, object>)cmd).ContainsKey(name)
+                : (bool)(cmd.GetType().GetProperty(name) != null);
         }
 
         private static dynamic ReadCmdParams(string json)

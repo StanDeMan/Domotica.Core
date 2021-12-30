@@ -147,7 +147,7 @@
                     connection.invoke("deviceStatusSend", JSON.stringify(device), device.NameId)
                         .catch(err => console.error(err.toString()));
 
-                    connection.invoke("sendAmbientCommand", JSON.stringify(device))
+                    connection.invoke("sendCommand", JSON.stringify(device))
                         .catch(err => console.error(err.toString()));
                 };
 
