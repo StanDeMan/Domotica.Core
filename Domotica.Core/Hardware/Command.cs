@@ -34,9 +34,10 @@ namespace Domotica.Core.Hardware
 
         public static void ExecuteAmbient(string json)
         {
-            var parameter = ReadCmdParams(json);
-
             using var device = new Device();
+
+            if (!device.IsReady) return;
+            var parameter = ReadCmdParams(json);
             device.Dimmer(parameter);
         }
 

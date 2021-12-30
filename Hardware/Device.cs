@@ -49,23 +49,12 @@ namespace Hardware
         {
             if (!IsReady) return;
 
-            // minimal one APA102 LED possible
-            var quantity = parameter.LedAmount ?? 1;
-
-            Quantity = quantity <= 0            
-                ? 1 
-                : quantity;
-
-            if(_spiDevice != null)
-                Apa102 = new Apa102(_spiDevice, Quantity);
-
-            if(Apa102 == null) return;
-
             // preset alpha and colors
             double a = 0;   
             var red = 0;     
             var green = 0;   
-            var blue = 0;    
+            var blue = 0;
+            var ledAmount = 0;
 
             try
             {
@@ -73,16 +62,29 @@ namespace Hardware
                 red   = Convert.ToInt32(parameter.Color.R);     // red
                 green = Convert.ToInt32(parameter.Color.G);     // green
                 blue  = Convert.ToInt32(parameter.Color.B);     // blue
+
+                ledAmount = Convert.ToInt32(parameter.LedAmount) ?? 1;
+
             }
             catch (Exception)
             {
                 // catch silently -> colors are present to 0
             }
 
-            // check if in bounds
-            var alpha = a > 1 
+            // minimal one APA102 LED possible
+            Quantity = ledAmount <= 0            
                 ? 1 
-                : (int)(a * byte.MaxValue);
+                : ledAmount;
+
+            // instantiate Apa102 device
+            if(_spiDevice != null) Apa102 = new Apa102(_spiDevice, Quantity);
+
+            if(Apa102 == null) return;
+
+            // check if in bounds
+            var alpha = a > 1
+                ? byte.MaxValue                             // max. 255
+                : (int)(Math.Round(a * byte.MaxValue));     // calculate alpha for value < 1
 
             Color = Color.FromArgb(alpha, red, green, blue);
             Dim(alpha);
