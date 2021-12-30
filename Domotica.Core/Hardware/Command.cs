@@ -6,6 +6,7 @@ using System.Text;
 using Hardware;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Serilog;
 
 namespace Domotica.Core.Hardware
 {
@@ -26,25 +27,55 @@ namespace Domotica.Core.Hardware
 
         public static void Execute(string json)
         {
-            var parameter = ReadCmdParams(json);
+            var parameter = ReadCmd(json);
             var present = HasProperty(parameter, "Command");
 
-            if (present)
+            var ok = present 
+                ? (bool)RunInternal(parameter) 
+                : (bool)RunExternal(parameter);
+
+            Log.Debug($"Command.Execute: {ok}, {json}");
+
+        }
+
+        private static bool RunExternal(dynamic parameter)
+        {
+            try
+            {
+                using var device = new Device();
+                if (!device.IsReady) return true;
+
+                device.Dimmer(parameter);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Command.Execute.RunExternal: {e}");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool RunInternal(dynamic parameter)
+        {
+            try
             {
                 var cmd = Convert.ToString(parameter.Command);
 
                 Writer.Write(@$"{cmd}{Environment.NewLine}");
                 Writer.Flush();
             }
-            else
+            catch (Exception e)
             {
-                using var device = new Device();
-                if (!device.IsReady) return;
+                Log.Error($"Command.Execute.RunInternal: {e}");
 
-                device.Dimmer(parameter);
+                return false;
             }
+
+            return true;
         }
-        
+
         private static bool HasProperty(dynamic cmd, string name)
         {
             return cmd is ExpandoObject
@@ -52,11 +83,13 @@ namespace Domotica.Core.Hardware
                 : (bool)(cmd.GetType().GetProperty(name) != null);
         }
 
-        private static dynamic ReadCmdParams(string json)
+        private static dynamic ReadCmd(string json, bool onlyParams = true)
         {
             dynamic cmd = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());
 
-            return cmd?.Params;   // return only parameters part
+            return onlyParams 
+                ? cmd?.Params 
+                : cmd;
         }
     }
 }

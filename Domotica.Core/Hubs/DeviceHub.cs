@@ -33,6 +33,7 @@ namespace Domotica.Core.Hubs
                 case false when !string.IsNullOrEmpty(storedDevice):
                     Devices.AddOrUpdate(@group, device);
                     break;
+
                 default:
                     // take the stored one: with set params
                     device = storedDevice;
