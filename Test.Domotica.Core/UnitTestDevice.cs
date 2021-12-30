@@ -12,7 +12,7 @@ namespace Test.Domotica.Core
         [TestMethod]
         public void TestDevice()
         {
-            using var apa102 = new Device(8);
+            using var apa102 = new Device();
 
             switch (Platform.OperatingSystem)
             {
