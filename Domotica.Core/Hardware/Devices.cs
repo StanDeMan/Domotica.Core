@@ -26,7 +26,7 @@ namespace Domotica.Core.Hardware
         {
             try
             {
-                // update
+                // update existing
                 if(DeviceList.TryGetValue(key, out _))
                 {
                     DeviceList[key] = device;
@@ -34,7 +34,7 @@ namespace Domotica.Core.Hardware
                     return true;
                 }
                 
-                // add
+                // add new
                 DeviceList.Add(key, device);
 
                 return true;
