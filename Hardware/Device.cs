@@ -93,6 +93,9 @@ namespace Hardware
 
         public void Switch(EnmState state)
         {
+            // check if SPI is initialized
+            if (!IsReady) return;
+
             switch (state)
             {
                 case EnmState.Off:
