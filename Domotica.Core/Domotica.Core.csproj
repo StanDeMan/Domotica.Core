@@ -97,6 +97,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataStore\DataBase.csproj" />
     <ProjectReference Include="..\Hardware\Hardware.csproj" />
   </ItemGroup>
 
