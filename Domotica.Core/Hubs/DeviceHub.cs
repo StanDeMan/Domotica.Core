@@ -24,18 +24,19 @@ namespace Domotica.Core.Hubs
         {
             Devices.ChangeNameFromConfig(device);
             var (ok, storedDevice) = await Devices.Read(group);
-            
+
             // check if device is stored
             switch (ok)
             {
-                // not stored: add a new one
+                // no stored device found: add a new one
                 case false when !string.IsNullOrEmpty(storedDevice):
-                    await Devices.AddOrUpdate(@group, device);
+                    await Devices.AddOrUpdate(@group, device);          
                     break;
 
                 default:
-                    // take the stored one
-                    device = storedDevice;
+                    device = string.IsNullOrEmpty(storedDevice) 
+                        ? device                                    // no stored device found: take the html page template
+                        : storedDevice;                             // take stored device    
                     break;
             }
 
