@@ -26,8 +26,8 @@ namespace DataBase
                 // Generate store with upper camel case Json file
                 // and reload before reading collection
                 DataStore = dataBaseName == null 
-                    ? new DataStore($"{DataBaseName}.json", false, null, true) 
-                    : new DataStore($"{dataBaseName}.json", false, null, true);
+                    ? new DataStore($@"{DataBaseName}.json", false, null, true) 
+                    : new DataStore($@"{dataBaseName}.json", false, null, true);
 
                 DataBaseName = dataBaseName ?? DataBaseName;
 
@@ -95,7 +95,7 @@ namespace DataBase
         /// <summary>
         /// Read json
         /// </summary>
-        /// <param name="id">Search for this id</param>
+        /// <param name="id">Search for this Id</param>
         /// <returns>Json as dynamic</returns>
         public async Task<dynamic?> ReadByIdAsync(int id)
         {
@@ -109,7 +109,7 @@ namespace DataBase
             }
             catch (Exception e)
             {
-                Log.Error($"DataBase.File.ReadAsync: {e}");
+                Log.Error($"DataBase.File.ReadByIdAsync: {e}");
 
                 return null;
             }
@@ -118,7 +118,7 @@ namespace DataBase
         /// <summary>
         /// Read json
         /// </summary>
-        /// <param name="deviceId">Search for deviceId</param>
+        /// <param name="deviceId">Search for DeviceId</param>
         /// <returns>Json as dynamic</returns>
         public async Task<dynamic?> ReadByDeviceIdAsync(string deviceId)
         {
@@ -132,7 +132,30 @@ namespace DataBase
             }
             catch (Exception e)
             {
-                Log.Error($"DataBase.File.ReadAsync: {e}");
+                Log.Error($"DataBase.File.ReadByDeviceIdAsync: {e}");
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Read json
+        /// </summary>
+        /// <param name="nameId">Search for NameId</param>
+        /// <returns>Json as dynamic</returns>
+        public async Task<dynamic?> ReadByNameIdAsync(string nameId)
+        {
+            try
+            {
+                var collection = DataStore?.GetCollection(CollectionName);
+                
+                return await Task.Run(() => collection?
+                    .AsQueryable()
+                    .FirstOrDefault(d => d.NameId == nameId));
+            }
+            catch (Exception e)
+            {
+                Log.Error($"DataBase.File.ReadByNameIdAsync: {e}");
 
                 return null;
             }
@@ -200,7 +223,7 @@ namespace DataBase
             }
             catch (Exception e)
             {
-                Log.Error($"DataBase.File.DeleteAsync: {e}");
+                Log.Error($"DataBase.File.DeleteByDeviceIdAsync: {e}");
                 
                 return false;
             }
@@ -222,7 +245,7 @@ namespace DataBase
             }
             catch (Exception e)
             {
-                Log.Error($"DataBase.File.DeleteAsync: {e}");
+                Log.Error($"DataBase.File.DeleteByIdAsync: {e}");
                 
                 return false;
             }
