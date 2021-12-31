@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using DataBase;
 using Domotica.Core.Config;
 using Newtonsoft.Json.Linq;
 using Serilog;
@@ -14,6 +16,7 @@ namespace Domotica.Core.Hardware
         // Container for device status implemented on the device html page.
         // Every device knows what it is and how to deal with related data!
         private static readonly Dictionary<string, string> DeviceList = new();
+        private static readonly FileStore Store = new();
 
         public static string ChangeNameFromConfig(string device)
         {
@@ -22,7 +25,7 @@ namespace Domotica.Core.Hardware
                 : SetName(device);
         }
 
-        public static bool AddOrUpdate(string key, string device)
+        public static async Task<bool> AddOrUpdate(string key, string device)
         {
             try
             {
@@ -30,12 +33,14 @@ namespace Domotica.Core.Hardware
                 if(DeviceList.TryGetValue(key, out _))
                 {
                     DeviceList[key] = device;
+                    await Store.UpdateAsync(device);
 
                     return true;
                 }
                 
                 // add new
                 DeviceList.Add(key, device);
+                await Store.InsertAsync(device);
 
                 return true;
 
@@ -55,9 +60,18 @@ namespace Domotica.Core.Hardware
 
         public static (bool, string) Read(string key)
         {
-            var ok = DeviceList.TryGetValue(key, out var value);
+            try
+            {
+                var ok = DeviceList.TryGetValue(key, out var value);
+                
+                return (ok, value);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Devices.Read: {e}");
 
-            return (ok, value);
+                return (false, string.Empty);
+            }
         }
 
         public static int Count()

@@ -16,8 +16,7 @@ namespace Domotica.Core.Hubs
 
         public async Task DeviceStatusSend(string device, string group)
         {
-            Devices.AddOrUpdate(group, device);
-            
+            await Devices.AddOrUpdate(@group, device);
             await Clients.OthersInGroup(group).SendAsync("deviceStatusReceived", device);
         }
 
@@ -31,7 +30,7 @@ namespace Domotica.Core.Hubs
             {
                 // not stored: add a new one
                 case false when !string.IsNullOrEmpty(storedDevice):
-                    Devices.AddOrUpdate(@group, device);
+                    await Devices.AddOrUpdate(@group, device);
                     break;
 
                 default:
