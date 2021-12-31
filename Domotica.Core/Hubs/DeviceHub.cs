@@ -23,7 +23,7 @@ namespace Domotica.Core.Hubs
         public async Task GetDeviceStatusInitial(string device, string group)
         {
             Devices.ChangeNameFromConfig(device);
-            var (ok, storedDevice) = Devices.Read(group);
+            var (ok, storedDevice) = await Devices.Read(group);
             
             // check if device is stored
             switch (ok)

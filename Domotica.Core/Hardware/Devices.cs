@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataBase;
 using Domotica.Core.Config;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -58,13 +59,20 @@ namespace Domotica.Core.Hardware
             return DeviceList.Remove(key);
         }
 
-        public static (bool, string) Read(string key)
+        public static async Task<(bool, string)> Read(string key)
         {
             try
             {
-                var ok = DeviceList.TryGetValue(key, out var value);
+                // check if present in list
+                if(DeviceList.TryGetValue(key, out var value))
+                    return (true, value);
                 
-                return (ok, value);
+                // check if present in database
+                var device = await Store.ReadByNameIdAsync(key);
+
+                return ((bool, string))(device?.NameId == key 
+                    ? (true, JsonConvert.SerializeObject(device)) 
+                    : (false, string.Empty));
             }
             catch (Exception e)
             {
