@@ -6,6 +6,11 @@
       "NameId": "AmbientLigth",
       "Params": {
         "Type": "Apa102",
+        "External": {
+          "Assembly": "Hardware",
+          "ClassName": "Device",
+          "Method": "Dimmer"
+        },
         "LedAmount": 8,
         "Color": {
           "A": 0.97,
