@@ -58,7 +58,13 @@ namespace DataBase
                 var device = JToken.Parse(json);
                 var collection = DataStore?.GetCollection(CollectionName);
 
-                return await collection?.InsertOneAsync(device)!;
+                // check if entry stored
+                var entry = await Task.Run(() => collection?
+                    .AsQueryable()
+                    .Count(d => d.DeviceId == device.Value<string>("DeviceId")));
+
+                // only one entry allowed
+                return entry == 0 && await collection?.InsertOneAsync(device)!;
             }
             catch (Exception e)
             {
