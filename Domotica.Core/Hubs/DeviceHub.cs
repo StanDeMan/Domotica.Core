@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Domotica.Core.Hubs
 {
-    public class Device : Hub
+    public sealed class Device : Hub
     {
         // Container for device status implemented on the device html page.
         // Every device knows what it is and how to deal with related data!
