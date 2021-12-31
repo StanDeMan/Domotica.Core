@@ -78,8 +78,11 @@ namespace Hardware
                 : ledAmount;
 
             // instantiate Apa102 device
-            if(_spiDevice != null) Apa102 = new Apa102(_spiDevice, Quantity);
-            if(Apa102 == null) return;
+            if(_spiDevice != null) 
+                Apa102 = new Apa102(_spiDevice, Quantity);
+            
+            if(Apa102 == null) 
+                return;
 
             // check if in bounds
             var alpha = a > 1
