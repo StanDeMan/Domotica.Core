@@ -8,9 +8,9 @@
         "Type": "Apa102",
         "LedAmount": 8,
         "Color": {
-          "A": 0.69,
-          "R": 255,
-          "G": 255,
+          "A": 0.46,
+          "R": 166,
+          "G": 0,
           "B": 255
         }
       },
@@ -22,9 +22,9 @@
       "NameId": "RGBLedStripe",
       "Params": {
         "Type": "LedStripe",
-        "Command": "p 3 56 p 4 56 p 14 56",
-        "LastValue": 22,
-        "Brightness": 22
+        "Command": "p 3 153 p 4 153 p 14 153",
+        "LastValue": 60,
+        "Brightness": 60
       },
       "Id": 1
     }
