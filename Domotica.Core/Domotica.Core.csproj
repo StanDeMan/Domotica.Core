@@ -84,6 +84,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="dev\" />
     <Folder Include="wwwroot\lib\metro-ui\" />
     <Folder Include="wwwroot\lib\metro-ui\js\" />
     <Folder Include="wwwroot\lib\controls\" />
