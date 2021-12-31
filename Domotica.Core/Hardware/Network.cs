@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 
@@ -6,7 +7,12 @@ namespace Domotica.Core.Hardware
 {
     public class Network
     {
-        public Mac Mac { get; } = new Mac();
+        public void ReadEntries()
+        {
+            throw new NotImplementedException("Network.Read not implemented!");
+        }
+
+        public Mac Mac { get; set; } = new Mac();
     }
 
     public class Mac
@@ -24,7 +30,7 @@ namespace Domotica.Core.Hardware
             return ReadNetWorks().ToList();
         }
 
-        private static IEnumerable<NetworkInterface> ReadNetWorks()
+        protected static IEnumerable<NetworkInterface> ReadNetWorks()
         {
             var activeNetworks = NetworkInterface
                 .GetAllNetworkInterfaces()

@@ -10,26 +10,42 @@ namespace Test.Domotica.Core
         [TestMethod]
         public void TestReadMacAddress()
         {
-            var network = new Mac();
-            var mac = network.ReadAddress();
+            var mac = new Mac();
+            var macAddress = mac.ReadAddress();
 
-            Assert.IsNotNull(mac);
-            Debug.Print($"Read MAC address: {mac}");
+            Assert.IsNotNull(macAddress);
+            Debug.Print($"Read MAC address: {macAddress}");
         }
 
         [TestMethod]
         public void TestReadMacAddresses()
         {
-            var network = new Mac();
-            var networks = network.ReadAddresses();
+            var mac = new Mac();
+            var macAddresses = mac.ReadAddresses();
 
-            Assert.AreNotEqual(0, networks.Count);
+            Assert.AreNotEqual(0, macAddresses.Count);
            
-            Debug.Print($"MAC addresses found: {networks.Count}");
+            Debug.Print($"MAC addresses found: {macAddresses.Count}");
 
-            foreach (var net in networks)
+            foreach (var macAddress in macAddresses)
             {
-                Debug.Print($"MAC address: {net.GetPhysicalAddress()}");
+                Debug.Print($"MAC address: {macAddress.GetPhysicalAddress()}");
+            }
+        }
+
+        [TestMethod]
+        public void TestReadMacAddressesViaNetwork()
+        {
+            var network = new Network();
+            var macAddresses = network.Mac.ReadAddresses();
+
+            Assert.AreNotEqual(0, macAddresses.Count);
+           
+            Debug.Print($"MAC addresses found: {macAddresses.Count}");
+
+            foreach (var macAddress in macAddresses)
+            {
+                Debug.Print($"MAC address: {macAddress.GetPhysicalAddress()}");
             }
         }
     }
