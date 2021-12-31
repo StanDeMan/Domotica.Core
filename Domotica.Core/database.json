@@ -13,9 +13,9 @@
         },
         "LedAmount": 8,
         "Color": {
-          "A": 0.97,
-          "R": 0,
-          "G": 17,
+          "A": 0.42,
+          "R": 238,
+          "G": 0,
           "B": 255
         }
       },
@@ -27,9 +27,9 @@
       "NameId": "RGBLedStripe",
       "Params": {
         "Type": "LedStripe",
-        "Command": "p 3 59 p 4 59 p 14 59",
-        "LastValue": 23,
-        "Brightness": 23
+        "Command": "p 3 0 p 4 0 p 14 0",
+        "LastValue": 80,
+        "Brightness": 0
       },
       "Id": 1
     }
