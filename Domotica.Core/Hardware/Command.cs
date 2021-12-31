@@ -28,11 +28,11 @@ namespace Domotica.Core.Hardware
         public static void Execute(string json)
         {
             var parameter = ReadCmd(json);
-            var present = HasProperty(parameter, "Command");
+            var present = HasProperty(parameter, "External");
 
             var ok = present 
-                ? (bool)RunInternal(parameter) 
-                : (bool)RunExternal(parameter);
+                ? (bool)RunExternal(parameter) 
+                : (bool)RunInternal(parameter);
 
             Log.Debug($"Command.Execute: {ok}, {json}");
 
