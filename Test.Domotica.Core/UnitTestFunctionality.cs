@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Domotica.Core.Functionality;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -24,7 +25,7 @@ namespace Test.Domotica.Core
                     'Type': 'Apa102',
                     'External': {
                         'Assembly': 'Hardware',
-                        'ClassName': 'Device',
+                        'Class': 'Device',
                         'Method': 'Dimmer'
                     },
                     'LedAmount': 8,
@@ -39,17 +40,23 @@ namespace Test.Domotica.Core
             if (string.IsNullOrEmpty(TestDir)) Assert.Fail($"Test execution path not found: {TestDir}");
             var execDir = $@"{TestDir}\Debug\net6.0" ;
 
-            var assembly = new ExtendAssembly(execDir, "Hardware", "Device");
+            dynamic cmdParams = JsonConvert.DeserializeObject(jsonCmdParams)!;
+
+            var assemblyName = Convert.ToString(cmdParams.External.Assembly); 
+            var className = Convert.ToString(cmdParams.External.Class);
+            var methodName = Convert.ToString(cmdParams.External.Method);
+
+            var assembly = new ExtendAssembly(execDir, assemblyName, className);
             if(!assembly.IsLoaded) Assert.Fail("Assembly not loaded.");
 
-            dynamic ambientLigth = JsonConvert.DeserializeObject(jsonCmdParams)!;
-
+            // object created from json
             var param = new object[1];
-            param[0] = ambientLigth;            
-
+            param[0] = cmdParams;            
+            
+            // type of parameter: dynamic -> so take object
             var type = new[] { typeof(object) };
 
-            assembly.Method?.Execute("Dimmer", type, param);
+            assembly.Method?.Execute(methodName, type, param);
         }
     }
 }
