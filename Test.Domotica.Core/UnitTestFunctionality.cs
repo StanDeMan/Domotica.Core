@@ -49,7 +49,7 @@ namespace Test.Domotica.Core
             var assembly = new ExtendAssembly(execDir, assemblyName, className);
             if(!assembly.IsLoaded) Assert.Fail("Assembly not loaded.");
 
-            // object created from json
+            // object created from json: method execution parameters
             var param = new object[1];
             param[0] = cmdParams;            
             
