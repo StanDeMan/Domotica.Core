@@ -50,12 +50,6 @@ namespace Domotica.Core.Functionality
 
     public sealed class Method
     {
-        public enum EnmMethod
-        {
-            Normal,
-            Static,
-            NotDefined
-        }
         private readonly object? _classInstance;
 
         private Type? Type { get; set; }
