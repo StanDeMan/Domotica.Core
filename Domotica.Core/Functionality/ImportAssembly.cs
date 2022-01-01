@@ -7,10 +7,25 @@ namespace Domotica.Core.Functionality
 {
     public sealed class ImportAssembly
     {
+        /// <summary>
+        /// Execute a method in the assembly dll
+        /// </summary>
         public Method? Method { get; set; }
 
+        /// <summary>
+        /// True: id assembly is loaded
+        /// </summary>
         public bool IsLoaded { get; set; }
 
+        /// <summary>
+        /// Import Assembly and take the specified parameters
+        /// </summary>
+        /// <param name="assemblyPath">Path where assembly resides</param>
+        /// <param name="assemblyName">Name of assembly</param>
+        /// <param name="className">Name of class</param>
+        /// <param name="ctorParams">Constructor parameters</param>
+        /// <exception cref="ArgumentNullException">All parameter have to be given</exception>
+        /// <exception cref="DllNotFoundException">If no assembly is found</exception>
         public ImportAssembly(
             string assemblyPath,
             string assemblyName,
@@ -28,14 +43,17 @@ namespace Domotica.Core.Functionality
 
             try
             {
+                // load assembly
                 var assembly = Assembly.LoadFrom($@"{assemblyPath}\{assemblyName}.dll");
                 var type = assembly.GetType($@"{assemblyName}.{className}");
 
                 if (type == null) return;
 
-                var instance = Activator.CreateInstance(type, ctorParams);
+                // create assembly constructor instance with constructor parameters
+                var classInstance = Activator.CreateInstance(type, ctorParams);
 
-                Method = new Method(instance, type);
+                // instantiate method
+                Method = new Method(classInstance, type);
                 IsLoaded = true;
             }
             catch (Exception e)
@@ -54,12 +72,25 @@ namespace Domotica.Core.Functionality
 
         private Type? Type { get; set; }
 
+        /// <summary>
+        /// Fluent part for ImportAssembly: instantiate method
+        /// </summary>
+        /// <param name="classInstance">Instance of class</param>
+        /// <param name="type">Type of class</param>
         public Method(object? classInstance, Type type)
         {
             _classInstance = classInstance;
             Type = type;
         }
 
+        /// <summary>
+        /// Execute method from imported assembly and class instance
+        /// </summary>
+        /// <param name="methodName">Take this method</param>
+        /// <param name="types">Define method types</param>
+        /// <param name="methodParams">Define method parameters</param>
+        /// <returns>return value or object</returns>
+        /// <exception cref="Exception"></exception>
         public object? Execute(string methodName, Type[]? types = null, object?[]? methodParams = null)
         {
             var methodInfo = types == null ? 

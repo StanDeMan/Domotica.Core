@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Test.Domotica.Core
 {
     [TestClass]
-    public sealed class UnitTestFunctionality
+    public sealed class UnitTestImportAssembly
     {
         public static string? TestDir { get; set; }
 
