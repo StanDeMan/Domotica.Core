@@ -46,7 +46,7 @@ namespace Test.Domotica.Core
             var className = Convert.ToString(cmdParams.External.Class);
             var methodName = Convert.ToString(cmdParams.External.Method);
 
-            var assembly = new ExtendAssembly(execDir, assemblyName, className);
+            var assembly = new ImportAssembly(execDir, assemblyName, className);
             if(!assembly.IsLoaded) Assert.Fail("Assembly not loaded.");
 
             // object created from json: method execution parameters

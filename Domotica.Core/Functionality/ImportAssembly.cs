@@ -5,13 +5,13 @@ using System.Reflection;
 
 namespace Domotica.Core.Functionality
 {
-    public sealed class ExtendAssembly
+    public sealed class ImportAssembly
     {
         public Method? Method { get; set; }
 
         public bool IsLoaded { get; set; }
 
-        public ExtendAssembly(
+        public ImportAssembly(
             string assemblyPath,
             string assemblyName,
             string className,
