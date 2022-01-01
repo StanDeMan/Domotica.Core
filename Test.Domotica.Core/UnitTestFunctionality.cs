@@ -36,8 +36,8 @@ namespace Test.Domotica.Core
                     }
                 }";
 
+            if (string.IsNullOrEmpty(TestDir)) Assert.Fail($"Test execution path not found: {TestDir}");
             var execDir = $@"{TestDir}\Debug\net6.0" ;
-            if (string.IsNullOrEmpty(execDir)) Assert.Fail("Execution path not found.");
 
             var assembly = new ExtendAssembly(execDir, "Hardware", "Device");
             if(!assembly.IsLoaded) Assert.Fail("Assembly not loaded.");
