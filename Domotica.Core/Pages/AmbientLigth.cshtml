@@ -101,6 +101,8 @@
 
                         SaveColor(device);
                         UpdateColor(colorRgba);
+
+                        DeviceStatusSend();
                     }
                 });
 
@@ -138,6 +140,14 @@
                 $("#BrightnessInTitle").text(formatCaption(device.Name, Math.round(glow * 100)));
             };   
 
+            function DeviceStatusSend() {
+                connection.invoke("deviceStatusSend", JSON.stringify(device), device.NameId)
+                    .catch(err => console.error(err.toString()));
+
+                connection.invoke("sendCommand", JSON.stringify(device))
+                    .catch(err => console.error(err.toString()));
+            }
+
             $(document).ready(function() {
                 colorPicker = new iro.ColorPicker("#picker",
                     {
@@ -148,12 +158,7 @@
 
                 function colorChangeCallback(color) {
                     UpdateColor(color.rgba);
-
-                    connection.invoke("deviceStatusSend", JSON.stringify(device), device.NameId)
-                        .catch(err => console.error(err.toString()));
-
-                    connection.invoke("sendCommand", JSON.stringify(device))
-                        .catch(err => console.error(err.toString()));
+                    DeviceStatusSend();
                 };
 
                 colorPicker.on("input:end", colorChangeCallback);
