@@ -61,7 +61,8 @@ namespace Domotica.Core.Hardware
                         _imported.Method.Name ?? string.Empty,
                         new[] { typeof(object) },
                         PrepareMethodParams(cmdParams))
-                    : _imported.Method?.Execute();
+                    : _imported.Method?.Execute(
+                        PrepareMethodParams(cmdParams));
             }
             catch (Exception e)
             {

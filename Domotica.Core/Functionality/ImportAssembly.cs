@@ -179,8 +179,10 @@ namespace Domotica.Core.Functionality
             return methodInfo.Invoke(_classInstance, methodParams);
         }
 
-        public object? Execute()
+        public object? Execute(object?[]? methodParams = null)
         {
+            MethodParams = methodParams;
+
             // if parameters are present - execute
             if (!IsInitialized)
                 throw new ArgumentException($"IsInitialized state: {IsInitialized}");
