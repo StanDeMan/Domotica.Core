@@ -15,6 +15,12 @@ namespace Domotica.Core.Functionality
 
         public Assembly? Assembly { get; set; }
 
+        public string? ExecPath { get; set; }
+
+        public string? Name { get; set; }
+
+        public string? ClassName { get; set; }
+
         /// <summary>
         /// True: id assembly is loaded
         /// </summary>
@@ -28,11 +34,11 @@ namespace Domotica.Core.Functionality
         /// <param name="className">Name of class</param>
         /// <param name="ctorParams">Constructor parameters</param>
         /// <exception cref="ArgumentNullException">All parameter have to be given</exception>
-        /// <exception cref="DllNotFoundException">If no assembly is found</exception>
+        /// <exception cref="DllNotFoundException">If no assembly DLL is found</exception>
         public ImportAssembly(
-            string assemblyPath,
-            string assemblyName,
-            string className,
+            string? assemblyPath,
+            string? assemblyName,
+            string? className,
             object?[]? ctorParams = null)
         {
             try
@@ -49,9 +55,17 @@ namespace Domotica.Core.Functionality
             }
         }
 
+        /// <summary>
+        /// Import Assembly and take the specified parameters
+        /// Path is set to execution path read from: Environment.ProcessPath
+        /// </summary>
+        /// <param name="assemblyName">Name of assembly</param>
+        /// <param name="className">Name of class</param>
+        /// <param name="ctorParams">Constructor parameters</param>
+        /// <exception cref="DllNotFoundException">If no assembly DLL is found</exception>
         public ImportAssembly(
-            string assemblyName,
-            string className,
+            string? assemblyName,
+            string? className,
             object?[]? ctorParams = null)
         {
             try
@@ -59,7 +73,7 @@ namespace Domotica.Core.Functionality
                 var assemblyPath = Path.GetDirectoryName(Environment.ProcessPath);
                 
                 if (string.IsNullOrEmpty(assemblyPath))
-                    throw new FileNotFoundException($"ImportAssembly.ImportAssembly: something went wrong: {assemblyPath}");
+                    throw new FileNotFoundException($"ImportAssembly Constructor: initialization went wrong: {assemblyPath}");
 
                 CheckParameters(assemblyPath, assemblyName, className);
                 Assembly = LoadAssembly(assemblyPath, assemblyName, className, ctorParams);
@@ -73,16 +87,18 @@ namespace Domotica.Core.Functionality
             }
         }
 
-        private static void CheckParameters(string assemblyPath, string assemblyName, string className)
+        /// <summary>
+        /// All parameters needed -> so check if present
+        /// </summary>
+        /// <param name="assemblyPath">Path to assembly Dll</param>
+        /// <param name="assemblyName">Used Assembly name</param>
+        /// <param name="className">Used Class name</param>
+        /// <exception cref="ArgumentNullException">If one parameter is missing - throw exception</exception>
+        private void CheckParameters(string? assemblyPath, string? assemblyName, string? className)
         {
-            if (assemblyPath == null)
-                throw new ArgumentNullException(nameof(assemblyPath));
-
-            if (assemblyName == null)
-                throw new ArgumentNullException(nameof(assemblyName));
-
-            if (className == null)
-                throw new ArgumentNullException(nameof(className));
+            ExecPath = assemblyPath ?? throw new ArgumentNullException(nameof(assemblyPath));
+            Name = assemblyName ?? throw new ArgumentNullException(nameof(assemblyName));
+            ClassName = className ?? throw new ArgumentNullException(nameof(className));
         }
 
         /// <summary>
@@ -93,7 +109,7 @@ namespace Domotica.Core.Functionality
         /// <param name="className">Assembly class to be imported</param>
         /// <param name="ctorParams">Class constructor parameters</param>
         /// <returns>Loaded Assembly instance</returns>
-        private Assembly LoadAssembly(string assemblyPath, string assemblyName, string className, object?[]? ctorParams)
+        private Assembly LoadAssembly(string? assemblyPath, string? assemblyName, string? className, object?[]? ctorParams)
         {
             // load assembly
             var assembly = Assembly.LoadFrom($@"{assemblyPath}\{assemblyName}.dll");
@@ -116,7 +132,15 @@ namespace Domotica.Core.Functionality
     {
         private readonly object? _classInstance;
 
+        public string? Name { get; set; }
+
+        public bool IsInitialized { get; set; }
+
         private Type? Type { get; set; }
+
+        private Type[]? Types { get; set; }
+
+        private object?[]? MethodParams { get; set; }
 
         /// <summary>
         /// Fluent part for ImportAssembly: instantiate method
@@ -139,14 +163,40 @@ namespace Domotica.Core.Functionality
         /// <exception cref="Exception"></exception>
         public object? Execute(string methodName, Type[]? types = null, object?[]? methodParams = null)
         {
+            Name = methodName;
+            Types = types;
+            MethodParams = methodParams;
+
             var methodInfo = types == null ? 
                 Type?.GetMethod(methodName) : 
                 Type?.GetMethod(methodName, types);
             
             if (methodInfo == null)
-                throw new Exception("No such method exists.");
+                throw new Exception($"Method not found: {methodName}.");
+
+            IsInitialized = true;
 
             return methodInfo.Invoke(_classInstance, methodParams);
+        }
+
+        public object? Execute()
+        {
+            // if parameters are present - execute
+            if (!IsInitialized)
+                throw new ArgumentException($"IsInitialized state: {IsInitialized}");
+
+            // cla
+            if (Name == null)
+                throw new Exception($"Method name not set: {Name}.");
+
+            var methodInfo = Types == null ? 
+                Type?.GetMethod(Name) : 
+                Type?.GetMethod(Name, Types);
+            
+            if (methodInfo == null)
+                throw new Exception($"Method not found: {Name}.");
+
+            return methodInfo.Invoke(_classInstance, MethodParams);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Domotica.Core.Hardware
 
     public sealed class Command
     {
-        private static ImportAssembly _assembly;
+        private static ImportAssembly _imported;
         private static readonly StreamWriter Writer;
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Domotica.Core.Hardware
             var present = HasProperty(parameter, "External");
 
             var ok = present 
-                ? (bool)RunExternal(parameter) 
+                ? RunExternal(parameter) 
                 : (bool)RunInternal(parameter);
 
             Log.Debug($"Command.Execute: {ok}, {json}");
@@ -48,33 +48,29 @@ namespace Domotica.Core.Hardware
         /// </summary>
         /// <param name="cmdParams">Command parameter part</param>
         /// <returns>True: if went ok</returns>
-        private static bool RunExternal(dynamic cmdParams)
+        private static object RunExternal(dynamic cmdParams)
         {
+            object ret;
+
             try
             {
-                var assemblyName = Convert.ToString(cmdParams.External.Assembly); 
-                var className = Convert.ToString(cmdParams.External.Class);
-                var methodName = Convert.ToString(cmdParams.External.Method);
+                _imported ??= ImportAssembly(cmdParams);
 
-                _assembly = new ImportAssembly(assemblyName, className);
-
-                // object created from json: method execution parameters
-                var param = new object[1];
-                param[0] = cmdParams;            
-            
-                // type of parameter: dynamic -> so take object
-                var type = new[] { typeof(object) };
-
-                _assembly.Method?.Execute(methodName, type, param);
+                ret = _imported.IsLoaded && !_imported.Method!.IsInitialized
+                    ? _imported.Method?.Execute(
+                        _imported.Method.Name ?? string.Empty,
+                        new[] { typeof(object) },
+                        PrepareMethodParams(cmdParams))
+                    : _imported.Method?.Execute();
             }
             catch (Exception e)
             {
-                Log.Error($"Command.Execute.RunExternal: {e}");
+                Log.Error($"Command.Execute (RunExternal): {e}");
 
-                return false;
+                return null;
             }
 
-            return true;
+            return ret;
         }
 
         /// <summary>
@@ -93,12 +89,44 @@ namespace Domotica.Core.Hardware
             }
             catch (Exception e)
             {
-                Log.Error($"Command.Execute.RunInternal: {e}");
+                Log.Error($"Command.Execute (RunInternal): {e}");
 
                 return false;
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Prepare params
+        /// </summary>
+        /// <param name="cmdParams">Dynamic deserialized from json</param>
+        /// <returns>Parameter for method</returns>
+        private static object[] PrepareMethodParams(dynamic cmdParams)
+        {
+            // object created from json: method execution parameters
+            var param = new object[1];
+            param[0] = cmdParams;
+
+            return param;
+        }
+
+        /// <summary>
+        /// Import Assembly Dll
+        /// </summary>
+        /// <param name="cmdParams">Dynamic deserialized from json</param>
+        /// <returns>Imported Assembly object</returns>
+        private static ImportAssembly ImportAssembly(dynamic cmdParams)
+        {
+            return new ImportAssembly(
+                Convert.ToString(cmdParams.External.Assembly), 
+                Convert.ToString(cmdParams.External.Class))
+            {
+                Method =
+                {
+                    Name = Convert.ToString(cmdParams.External.Method)
+                }
+            };
         }
 
         /// <summary>
