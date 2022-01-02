@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
+﻿using Serilog;
+using System;
 using System.IO;
 using System.Text;
-using Hardware;
+using System.Dynamic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Serilog;
 
 namespace Domotica.Core.Hardware
 {
+    using Functionality;
+
     public sealed class Command
     {
+        private static ImportAssembly _assembly;
         private static readonly StreamWriter Writer;
 
         /// <summary>
@@ -25,6 +27,10 @@ namespace Domotica.Core.Hardware
             Writer = new StreamWriter(fileStream, Encoding.ASCII);
         }
 
+        /// <summary>
+        /// Execute command
+        /// </summary>
+        /// <param name="json">What should be executed is located in the json file</param>
         public static void Execute(string json)
         {
             var parameter = ReadCmd(json);
@@ -35,17 +41,31 @@ namespace Domotica.Core.Hardware
                 : (bool)RunInternal(parameter);
 
             Log.Debug($"Command.Execute: {ok}, {json}");
-
         }
 
-        private static bool RunExternal(dynamic parameter)
+        /// <summary>
+        /// External execution
+        /// </summary>
+        /// <param name="cmdParams">Command parameter part</param>
+        /// <returns>True: if went ok</returns>
+        private static bool RunExternal(dynamic cmdParams)
         {
             try
             {
-                using var device = new Device();
-                if (!device.IsReady) return true;
+                var assemblyName = Convert.ToString(cmdParams.External.Assembly); 
+                var className = Convert.ToString(cmdParams.External.Class);
+                var methodName = Convert.ToString(cmdParams.External.Method);
 
-                device.Dimmer(parameter);
+                _assembly = new ImportAssembly(assemblyName, className);
+
+                // object created from json: method execution parameters
+                var param = new object[1];
+                param[0] = cmdParams;            
+            
+                // type of parameter: dynamic -> so take object
+                var type = new[] { typeof(object) };
+
+                _assembly.Method?.Execute(methodName, type, param);
             }
             catch (Exception e)
             {
@@ -57,6 +77,11 @@ namespace Domotica.Core.Hardware
             return true;
         }
 
+        /// <summary>
+        /// Internal execution
+        /// </summary>
+        /// <param name="parameter">Command property</param>
+        /// <returns>True: if went ok</returns>
         private static bool RunInternal(dynamic parameter)
         {
             try
@@ -76,6 +101,12 @@ namespace Domotica.Core.Hardware
             return true;
         }
 
+        /// <summary>
+        /// Check if property present
+        /// </summary>
+        /// <param name="cmd">Search here inside</param>
+        /// <param name="name">Search for this property</param>
+        /// <returns>True: if found</returns>
         private static bool HasProperty(dynamic cmd, string name)
         {
             return cmd is ExpandoObject
@@ -83,6 +114,12 @@ namespace Domotica.Core.Hardware
                 : (bool)(cmd.GetType().GetProperty(name) != null);
         }
 
+        /// <summary>
+        /// Read command section
+        /// </summary>
+        /// <param name="json">Read from here</param>
+        /// <param name="onlyParams">Take only parameter part for the search</param>
+        /// <returns>Json tree part: Params ore complete</returns>
         private static dynamic ReadCmd(string json, bool onlyParams = true)
         {
             dynamic cmd = JsonConvert.DeserializeObject<ExpandoObject>(json, new ExpandoObjectConverter());

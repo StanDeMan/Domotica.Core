@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using Serilog;
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace Domotica.Core.Functionality
@@ -11,6 +12,8 @@ namespace Domotica.Core.Functionality
         /// Execute a method in the assembly dll
         /// </summary>
         public Method? Method { get; set; }
+
+        public Assembly? Assembly { get; set; }
 
         /// <summary>
         /// True: id assembly is loaded
@@ -32,29 +35,10 @@ namespace Domotica.Core.Functionality
             string className,
             object?[]? ctorParams = null)
         {
-            if (assemblyPath == null)
-                throw new ArgumentNullException(nameof(assemblyPath));
-
-            if (assemblyName == null)
-                throw new ArgumentNullException(nameof(assemblyName));
-
-            if(className == null)
-                throw new ArgumentNullException(nameof(className));
-
             try
             {
-                // load assembly
-                var assembly = Assembly.LoadFrom($@"{assemblyPath}\{assemblyName}.dll");
-                var type = assembly.GetType($@"{assemblyName}.{className}");
-
-                if (type == null) return;
-
-                // create assembly constructor instance with constructor parameters
-                var classInstance = Activator.CreateInstance(type, ctorParams);
-
-                // instantiate method
-                Method = new Method(classInstance, type);
-                IsLoaded = true;
+                CheckParameters(assemblyPath, assemblyName, className);
+                Assembly = LoadAssembly(assemblyPath, assemblyName, className, ctorParams);
             }
             catch (Exception e)
             {
@@ -63,6 +47,68 @@ namespace Domotica.Core.Functionality
                 Log.Error(errMsg);
                 throw new DllNotFoundException(errMsg);
             }
+        }
+
+        public ImportAssembly(
+            string assemblyName,
+            string className,
+            object?[]? ctorParams = null)
+        {
+            try
+            {
+                var assemblyPath = Path.GetDirectoryName(Environment.ProcessPath);
+                
+                if (string.IsNullOrEmpty(assemblyPath))
+                    throw new FileNotFoundException($"ImportAssembly.ImportAssembly: something went wrong: {assemblyPath}");
+
+                CheckParameters(assemblyPath, assemblyName, className);
+                Assembly = LoadAssembly(assemblyPath, assemblyName, className, ctorParams);
+            }
+            catch (Exception e)
+            {
+                var errMsg = $@"ExtendAssembly failed: {e}";
+
+                Log.Error(errMsg);
+                throw new DllNotFoundException(errMsg);
+            }
+        }
+
+        private static void CheckParameters(string assemblyPath, string assemblyName, string className)
+        {
+            if (assemblyPath == null)
+                throw new ArgumentNullException(nameof(assemblyPath));
+
+            if (assemblyName == null)
+                throw new ArgumentNullException(nameof(assemblyName));
+
+            if (className == null)
+                throw new ArgumentNullException(nameof(className));
+        }
+
+        /// <summary>
+        /// Try to load assembly
+        /// </summary>
+        /// <param name="assemblyPath">Path were assembly resides</param>
+        /// <param name="assemblyName">Assembly name</param>
+        /// <param name="className">Assembly class to be imported</param>
+        /// <param name="ctorParams">Class constructor parameters</param>
+        /// <returns>Loaded Assembly instance</returns>
+        private Assembly LoadAssembly(string assemblyPath, string assemblyName, string className, object?[]? ctorParams)
+        {
+            // load assembly
+            var assembly = Assembly.LoadFrom($@"{assemblyPath}\{assemblyName}.dll");
+            var type = assembly.GetType($@"{assemblyName}.{className}");
+
+            if (type == null) return assembly;
+
+            // create assembly constructor instance with constructor parameters
+            var classInstance = Activator.CreateInstance(type, ctorParams);
+
+            // instantiate method
+            Method = new Method(classInstance, type);
+            IsLoaded = true;
+
+            return assembly;
         }
     }
 
