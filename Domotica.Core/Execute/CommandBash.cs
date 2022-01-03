@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Domotica.Core.Execute
 {
-    public class BashCommand
+    public sealed class CommandBash
     {
         public string Execute(string command)
         {
