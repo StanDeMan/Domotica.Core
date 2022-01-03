@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Domotica.Core.Execute;
 using Domotica.Core.Hardware;
 using Microsoft.AspNetCore.SignalR;
 
@@ -8,7 +9,6 @@ namespace Domotica.Core.Hubs
     {
         // Container for device status implemented on the device html page.
         // Every device knows what it is and how to deal with related data!
-
         public void SendCommand(string value)
         {
             Command.Execute(value);

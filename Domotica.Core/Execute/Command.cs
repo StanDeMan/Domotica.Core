@@ -1,24 +1,25 @@
-﻿using Serilog;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Text;
-using System.Dynamic;
-using System.Collections.Generic;
+using Domotica.Core.Functionality;
+using Domotica.Core.Hardware;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Serilog;
 
-namespace Domotica.Core.Hardware
+namespace Domotica.Core.Execute
 {
-    using Functionality;
-
     public sealed class Command
     {
         private static ImportAssembly _imported;
         private static readonly StreamWriter Writer;
 
         /// <summary>
-        /// On development machine local path is set to: ./dev/pigpio file
-        /// On linux the path is set to pigpio deamon: /dev/pigpio
+        /// Constructor:
+        /// -> On development machine local path is set to: ./dev/pigpio file
+        /// -> On linux the path is set to pigpio deamon: /dev/pigpio
         /// </summary>
         static Command()
         {
