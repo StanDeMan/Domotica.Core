@@ -48,5 +48,18 @@ namespace Test.Domotica.Core
                 Debug.Print($"MAC address: {macAddress.GetPhysicalAddress()}");
             }
         }
+
+        [TestMethod]
+        public void TestReadWifiNetworkOptions()
+        {
+            var (ok, wifiNetworks) = new Network().ReadWifiOptionsAsync().Result;
+            Assert.IsFalse(ok);
+            Assert.IsNotNull(wifiNetworks);
+
+            foreach (var wifiNetwork in wifiNetworks)
+            {
+                Debug.Print($"SSID: {wifiNetwork.SsId}, Encryption: {wifiNetwork.Encryption}, Quality: {wifiNetwork.Quality}");
+            }
+        }
     }
 }
