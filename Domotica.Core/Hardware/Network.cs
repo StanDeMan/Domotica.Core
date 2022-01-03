@@ -24,7 +24,7 @@ namespace Domotica.Core.Hardware
 
             try
             {
-                var retBash = await new CommandBash().ExecuteAsync(@"sudo iwlist wlan0 scan | grep 'ESSID:\|Quality\|Encryption'");
+                var retBash = await new Bash().ExecuteAsync(@"sudo iwlist wlan0 scan | grep 'ESSID:\|Quality\|Encryption'");
 
                 var listWifi = retBash
                     .Split("Quality")
