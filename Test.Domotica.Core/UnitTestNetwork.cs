@@ -52,7 +52,7 @@ namespace Test.Domotica.Core
         [TestMethod]
         public void TestReadWifiNetworkOptions()
         {
-            var (ok, wifiNetworks) = new Network().ReadWifiOptionsAsync().Result;
+            var (ok, wifiNetworks) = new Network().ReadWifiNetworksAsync().Result;
             Assert.IsFalse(ok);
             Assert.IsNotNull(wifiNetworks);
 

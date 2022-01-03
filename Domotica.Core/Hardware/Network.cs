@@ -14,8 +14,10 @@ namespace Domotica.Core.Hardware
 
     public class Network
     {
-        public async Task<(bool, List<Parameter>)> ReadWifiOptionsAsync()
+        public async Task<(bool, List<Parameter>)> ReadWifiNetworksAsync()
         {
+            // Initialize empty list Wifi.Networks list
+            // If running on windows: fill dummy list for tests
             var presentWifi = Platform.OperatingSystem == Platform.EnmOperatingSystem.Windows 
                 ? DummyWifiForWindows() 
                 : new Wifi();
@@ -56,6 +58,10 @@ namespace Domotica.Core.Hardware
             return (true, presentWifi.NetWorks);
         }
 
+        /// <summary>
+        /// Dummy wifi network list
+        /// </summary>
+        /// <returns>Dummy list</returns>
         private static Wifi DummyWifiForWindows()
         {
             var presentWifi = new Wifi();
@@ -77,6 +83,10 @@ namespace Domotica.Core.Hardware
 
     public class Mac
     {
+        /// <summary>
+        /// Read first MAC address
+        /// </summary>
+        /// <returns></returns>
         public string ReadAddress()
         {
             return ReadNetWorks()
@@ -85,6 +95,10 @@ namespace Domotica.Core.Hardware
                 .ToString();
         }
 
+        /// <summary>
+        /// Read all present non wifi networks
+        /// </summary>
+        /// <returns>List of networks</returns>
         public ICollection<NetworkInterface> ReadAddresses()
         {
             return ReadNetWorks().ToList();
