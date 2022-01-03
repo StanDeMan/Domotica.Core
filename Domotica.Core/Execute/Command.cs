@@ -16,8 +16,6 @@ namespace Domotica.Core.Execute
         private static ImportAssembly _imported;
         private static readonly StreamWriter Writer;
 
-        public Bash Bash { get; set; } = new Bash();
-
         /// <summary>
         /// Constructor:
         /// -> On development machine local path is set to: ./dev/pigpio file

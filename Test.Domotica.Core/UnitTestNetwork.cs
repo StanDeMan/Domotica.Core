@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Domotica.Core.Execute;
 using Domotica.Core.Hardware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
