@@ -52,6 +52,7 @@ namespace Domotica.Core.Hardware
             catch (Exception e)
             { 
                 Log.Error($"Network.ReadWifiOptions exception: {e}");
+
                 return (false, presentWifi.NetWorks);   // empty list
             }
 
