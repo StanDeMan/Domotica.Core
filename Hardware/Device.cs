@@ -23,7 +23,7 @@ namespace Hardware
 
         /// <summary>
         /// Device constructor
-        /// ATTENTION: Must be without parameters
+        /// ATTENTION: Must be without constructor parameters
         /// </summary>
         /// <exception cref="NullReferenceException"></exception>
         public Device()
