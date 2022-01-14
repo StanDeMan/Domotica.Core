@@ -17,38 +17,45 @@ namespace Hardware
 
         public Apa102? Apa102;
         
-        public bool IsReady { get; set; }
-
+        public bool IsRunning { get; set; }
         public int Quantity { get; set; }
-
         public Color Color { get; set; } = Color.White;
 
+        /// <summary>
+        /// Device constructor
+        /// ATTENTION: Must be without parameters
+        /// </summary>
+        /// <exception cref="NullReferenceException"></exception>
         public Device()
         {
             try
             {
                 _spiDevice = SpiDevice.Create(new SpiConnectionSettings(0, 0)
                 {
-                    ClockFrequency = 20_000_000,
+                    ClockFrequency = 20_000_000,        // hardcoded first: set to 20 MHz
                     DataFlow = DataFlow.MsbFirst,
-                    Mode = SpiMode.Mode0            // ensure data is ready at clock rising edge
+                    Mode = SpiMode.Mode0                // ensure data is ready at clock rising edge
                 });
 
                 if (_spiDevice == null) 
                     throw new NullReferenceException("Cannot start SPI.");
 
-                IsReady = true;
+                IsRunning = true;
             }
             catch (Exception)
             {
-                IsReady = false;
+                IsRunning = false;
             }
         }
 
+        /// <summary>
+        /// Dimmer used over Reflection
+        /// </summary>
+        /// <param name="parameter">Dynamic parameter for dimmer control</param>
         public void Dimmer(dynamic parameter)
         {
             // check if SPI is initialized
-            if (!IsReady) return;
+            if (!IsRunning) return;
 
             // preset alpha and colors
             double a = 0;   
@@ -78,11 +85,8 @@ namespace Hardware
                 : ledAmount;
 
             // instantiate Apa102 device
-            if(_spiDevice != null) 
-                Apa102 = new Apa102(_spiDevice, Quantity);
-            
-            if(Apa102 == null) 
-                return;
+            if(_spiDevice != null) Apa102 = new Apa102(_spiDevice, Quantity);   
+            if(Apa102 == null) return;
 
             // check if in bounds
             var alpha = a > 1
@@ -94,10 +98,14 @@ namespace Hardware
             Flush();                                            // write to all LED devices
         }
 
+        /// <summary>
+        /// Switch: color is white only
+        /// </summary>
+        /// <param name="state">On/Off</param>
         public void Switch(EnmState state)
         {
             // check if SPI is initialized
-            if (!IsReady) return;
+            if (!IsRunning) return;
 
             switch (state)
             {

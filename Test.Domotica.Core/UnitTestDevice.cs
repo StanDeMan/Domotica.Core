@@ -18,7 +18,7 @@ namespace Test.Domotica.Core
             {
                 case Platform.EnmOperatingSystem.Linux:
                 {
-                    var ready = apa102.IsReady;
+                    var ready = apa102.IsRunning;
                     Assert.AreEqual(true, ready);
                     Debug.Print($"Operating System: {Platform.EnmOperatingSystem.Linux}");
 
@@ -31,7 +31,7 @@ namespace Test.Domotica.Core
                 }
                 case Platform.EnmOperatingSystem.Windows:
                 {
-                    var notReady = apa102.IsReady;
+                    var notReady = apa102.IsRunning;
 
                     Assert.AreEqual(false, notReady);
                     Debug.Print($"Operating System: {Platform.EnmOperatingSystem.Windows}");
