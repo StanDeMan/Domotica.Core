@@ -6,7 +6,7 @@ Even PWM is possible with low CPU power consumtion - doing it via DMA.
 Used self signed certificate
 
 # Default NGiNX server configuration
-# with self signed certificate
+# 
 server {
    listen 80;
    server_name domotica.net.local *.domotica.net.local;
