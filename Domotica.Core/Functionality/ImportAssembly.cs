@@ -70,11 +70,11 @@ namespace Domotica.Core.Functionality
         {
             try
             {
-                var path = Assembly.GetExecutingAssembly().Location;
-                var assemblyPath = Path.GetDirectoryName(path);
+                var assemblyPath = Path.GetDirectoryName(
+                    Assembly.GetExecutingAssembly().Location);
                 
                 if (string.IsNullOrEmpty(assemblyPath))
-                    throw new FileNotFoundException($"ImportAssembly Constructor: initialization went wrong: {assemblyPath}");
+                    throw new FileNotFoundException($"ImportAssembly: import failed: {assemblyPath}");
 
                 CheckParameters(assemblyPath, assemblyName, className);
                 Assembly = LoadAssembly(assemblyPath, assemblyName, className, ctorParams);
