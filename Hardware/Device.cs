@@ -4,7 +4,7 @@ using Iot.Device.Apa102;
 
 namespace Hardware
 {
-    public class Device : IDisposable
+    public sealed class Device : IDisposable
     {
         private readonly SpiDevice? _spiDevice;
 
