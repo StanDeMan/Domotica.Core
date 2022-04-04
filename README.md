@@ -5,6 +5,7 @@ Even PWM is possible with low CPU power consumtion - doing it via DMA.
 
 Used self signed certificate
 
+```
 # Default NGiNX server configuration
 # 
 server {
@@ -48,3 +49,4 @@ server {
       proxy_set_header   X-Forwarded-Proto $scheme;
    }
 }
+```
