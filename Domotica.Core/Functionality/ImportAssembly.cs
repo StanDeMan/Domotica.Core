@@ -180,6 +180,13 @@ namespace Domotica.Core.Functionality
             return methodInfo.Invoke(_classInstance, methodParams);
         }
 
+        /// <summary>
+        /// Execute method from imported assembly and class instance
+        /// </summary>
+        /// <param name="methodParams">one to many parameters</param>
+        /// <returns>return value or object</returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="Exception"></exception>
         public object? Execute(object?[]? methodParams = null)
         {
             MethodParams = methodParams;
