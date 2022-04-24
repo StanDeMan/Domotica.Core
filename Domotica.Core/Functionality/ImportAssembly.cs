@@ -48,7 +48,7 @@ namespace Domotica.Core.Functionality
             }
             catch (Exception e)
             {
-                var errMsg = $@"ExtendAssembly failed: {e}";
+                var errMsg = $@"ImportAssembly failed: {e}";
 
                 Log.Error(errMsg);
                 throw new DllNotFoundException(errMsg);
@@ -81,7 +81,7 @@ namespace Domotica.Core.Functionality
             }
             catch (Exception e)
             {
-                var errMsg = $@"ExtendAssembly failed: {e}";
+                var errMsg = $@"ImportAssembly failed: {e}";
 
                 Log.Error(errMsg);
                 throw new DllNotFoundException(errMsg);

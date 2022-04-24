@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-	<!--<RuntimeIdentifier>linux-arm</RuntimeIdentifier>-->
+	<RuntimeIdentifier>linux-arm</RuntimeIdentifier>
     <!--<RuntimeIdentifier Condition=" '$(OS)' == 'Raspbian' ">linux-arm</RuntimeIdentifier>-->
     <UserSecretsId>d29a9e04-789a-47d2-9e20-aa24e4221f1b</UserSecretsId>
   </PropertyGroup>
