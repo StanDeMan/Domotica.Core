@@ -22,11 +22,9 @@ public class Token
                 nameof(length));
         }
 
-        return ShortId.Generate(new GenerationOptions
-        {
-            Length = length,
-            UseNumbers = true,
-            UseSpecialCharacters = false
-        });
+        return ShortId.Generate(new GenerationOptions(
+            useNumbers: true, 
+            useSpecialCharacters: 
+            false, length));
     }
 }
