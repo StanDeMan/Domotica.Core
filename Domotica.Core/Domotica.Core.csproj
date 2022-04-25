@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-	<RuntimeIdentifier>linux-arm</RuntimeIdentifier>
+	<!--<RuntimeIdentifier>linux-arm</RuntimeIdentifier>-->
     <!--<RuntimeIdentifier Condition=" '$(OS)' == 'Raspbian' ">linux-arm</RuntimeIdentifier>-->
     <UserSecretsId>d29a9e04-789a-47d2-9e20-aa24e4221f1b</UserSecretsId>
   </PropertyGroup>
@@ -94,9 +94,9 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="shortid" Version="3.0.1" />
+    <PackageReference Include="shortid" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
