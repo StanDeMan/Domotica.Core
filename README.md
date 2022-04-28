@@ -50,3 +50,7 @@ server {
    }
 }
 ```
+Actual GUI so far:
+![alt text](https://github.com/StanDeMan/Domotica.Core/blob/master/Domotica.Core.01.jpg)
+
+![alt text](https://github.com/StanDeMan/Domotica.Core/blob/master/Domotica.Core.02.jpg)
