@@ -1,5 +1,5 @@
 # Domotica.Core
-SignalR Remoting (pigpiod installation needed on Raspberry Pi) LED Stripe.
+SignalR Remoting (pigpiod installation needed on Raspberry Pi) LED Stripes and other devices.
 Install pigpiod. It's an amazing piece of software: https://abyz.me.uk/rpi/pigpio/pigpiod.html
 Even PWM is possible with low CPU power consumption - doing it via DMA.
 
