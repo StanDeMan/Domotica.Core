@@ -1,9 +1,10 @@
 # Domotica.Core
-SignalR Remoting (pigpiod installation needed on Raspberry Pi) LED Stripe.
+SignalR Remoting (pigpiod installation needed on Raspberry Pi) LED Stripes and other devices.
 Install pigpiod. It's an amazing piece of software: https://abyz.me.uk/rpi/pigpio/pigpiod.html
 Even PWM is possible with low CPU power consumption - doing it via DMA.
 
-Used self signed certificate
+Used self signed certificate.
+Related NGiNX server configuration:
 
 ```
 # Default NGiNX server configuration
@@ -50,3 +51,7 @@ server {
    }
 }
 ```
+Actual GUI so far:
+
+![alt text](https://github.com/StanDeMan/Domotica.Core/blob/master/Domotica.Core.01.jpg)
+![alt text](https://github.com/StanDeMan/Domotica.Core/blob/master/Domotica.Core.02.jpg)
