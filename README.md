@@ -6,6 +6,9 @@ Even PWM is possible with low CPU power consumption - doing it via DMA.
 Used self signed certificate.
 Related NGiNX server configuration:
 
+To configure Nginx as a reverse proxy to forward requests to our ASP.NET Core app, we need to modify /etc/nginx/sites-available/default. 
+Open it in a text editor, and replace the contents with the following:
+
 ```
 # Default NGiNX server configuration
 # 
