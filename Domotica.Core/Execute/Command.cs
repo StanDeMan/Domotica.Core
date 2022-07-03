@@ -20,6 +20,7 @@ namespace Domotica.Core.Execute
         /// Constructor:
         /// -> On development machine local path is set to: ./dev/pigpio file
         /// -> On linux the path is set to pigpio deamon: /dev/pigpio
+        /// -> Run PIGPIO as deamon on raspberry pi
         /// </summary>
         static Command()
         {
