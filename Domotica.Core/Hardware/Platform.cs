@@ -4,7 +4,7 @@ using SysNet = System.Net;
 
 namespace Domotica.Core.Hardware
 {
-    public class Platform
+    public static class Platform
     {
         public enum EnmOperatingSystem
         {
