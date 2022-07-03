@@ -17,14 +17,17 @@ namespace Domotica.Core.Hardware
         private const string GpioFile = "/dev/pigpio";
 
         public static EnmOperatingSystem OperatingSystem { get; set; }
-        public static string DevicePath { get; set; }
-        public static string Dns { get; set; }
+
+        public static string DevicePath { get; private set; }
+
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
+        private static string Dns { get; set; }
 
         static Platform()
         {
             // If not running on pi set environment for windows platform
-            OperatingSystem = Environment.OSVersion.Platform != PlatformID.Win32NT 
-                ? RunOnLinux() 
+            OperatingSystem = Environment.OSVersion.Platform != PlatformID.Win32NT
+                ? RunOnLinux()
                 : RunOnWindows();
         }
 
@@ -36,7 +39,7 @@ namespace Domotica.Core.Hardware
         /// <param name="path">Linux path convetion</param>
         private static void SetPath(string path)
         {
-            var currentPath = Path.GetFullPath(@"..\..\");  
+            var currentPath = Path.GetFullPath(@"..\..\");
             path = path.TrimStart('/').Replace('/', '\\');
             DevicePath = Path.Combine(currentPath, path);
         }
