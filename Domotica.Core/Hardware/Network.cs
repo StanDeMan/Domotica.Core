@@ -105,7 +105,7 @@ namespace Domotica.Core.Hardware
             return ReadNetWorks().ToList();
         }
 
-        protected static IEnumerable<NetworkInterface> ReadNetWorks()
+        private static IEnumerable<NetworkInterface> ReadNetWorks()
         {
             var activeNetworks = NetworkInterface
                 .GetAllNetworkInterfaces()
