@@ -99,9 +99,7 @@
                         // The first client reading the device status gets here inside
                         device = JSON.parse(status);
 
-                        SaveColor(device);
-                        UpdateColor(colorRgba);
-
+                        UpdateState(device);
                         DeviceStatusSend();
                     }
                 });
