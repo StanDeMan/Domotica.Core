@@ -54,6 +54,8 @@ server {
    }
 }
 ```
+Create your own self signed certificate and replace ssl_certificate and ssl_certificate_key with your key store files and content.
+
 Actual GUI so far:
 
 ![alt text](https://github.com/StanDeMan/Domotica.Core/blob/master/Domotica.Core.01.jpg)
